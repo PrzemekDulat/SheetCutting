@@ -18,6 +18,7 @@ namespace RectangleSpreadController.Tests
             {
             var result = rectangleSorter.CreateRandomListOfRectangles(value);
             Assert.IsTrue(result.Count == value);
+                
             }
 
         }

@@ -21,6 +21,7 @@ namespace SheetCutting
         private void startAssemble_click(object sender, EventArgs e)
         {
             pictureBox1.Image = adapter.StartAssemblingRectangles();
+            //czesc
         }
 
         private void generateJson_Click(object sender, EventArgs e)
