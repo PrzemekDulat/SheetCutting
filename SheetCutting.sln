@@ -5,6 +5,10 @@ VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SheetCutting", "SheetCutting\SheetCutting.csproj", "{C0956C5E-4D4C-483E-90A7-219972135789}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RectangleSpreadController", "RectangleSpreadController\RectangleSpreadController.csproj", "{D8BECA65-693E-4A2F-859B-914979837993}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RectangleSpreadControllerTests", "RectangleSpreadControllerTests\RectangleSpreadControllerTests.csproj", "{2BB6CFC4-41AB-4EA1-8B98-D9F37B97BF65}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{C0956C5E-4D4C-483E-90A7-219972135789}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C0956C5E-4D4C-483E-90A7-219972135789}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C0956C5E-4D4C-483E-90A7-219972135789}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D8BECA65-693E-4A2F-859B-914979837993}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8BECA65-693E-4A2F-859B-914979837993}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8BECA65-693E-4A2F-859B-914979837993}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8BECA65-693E-4A2F-859B-914979837993}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2BB6CFC4-41AB-4EA1-8B98-D9F37B97BF65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2BB6CFC4-41AB-4EA1-8B98-D9F37B97BF65}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2BB6CFC4-41AB-4EA1-8B98-D9F37B97BF65}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2BB6CFC4-41AB-4EA1-8B98-D9F37B97BF65}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

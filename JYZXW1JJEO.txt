@@ -1,0 +1,15 @@
+Width: 199   Height: 108     POS: 0, 0
+Width: 190   Height: 146     POS: 0, 108
+Width: 190   Height: 166     POS: 0, 254
+Width: 186   Height: 58     POS: 0, 420
+Width: 175   Height: 102     POS: 199, -58
+Width: 174   Height: 118     POS: 199, 44
+Width: 167   Height: 132     POS: 199, 162
+Width: 165   Height: 154     POS: 199, 294
+Width: 164   Height: 73     POS: 374, -154
+Width: 163   Height: 94     POS: 374, -81
+Width: 154   Height: 98     POS: 374, 13
+Width: 150   Height: 142     POS: 374, 111
+Width: 148   Height: 54     POS: 374, 253
+Width: 134   Height: 118     POS: 374, 307
+Width: 72   Height: 66     POS: 374, 425

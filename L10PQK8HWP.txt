@@ -1,0 +1,5 @@
+Width: 190   Height: 159     POS: 0, 0
+Width: 182   Height: 80     POS: 0, 159
+Width: 145   Height: 85     POS: 0, 239
+Width: 118   Height: 117     POS: 0, 324
+Width: 58   Height: 55     POS: 0, 441
