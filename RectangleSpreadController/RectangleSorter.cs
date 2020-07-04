@@ -12,70 +12,14 @@ namespace RectangleSpreadController
     {
         public List<RectangleModel> AssembledRectangles()
         {
-            return SetRectanglesLocation(SortRectanglesDecreasing(CreateRandomListOfRectangles(5)), 1500, 500);
+            return SetRectanglesLocation(SortRectanglesDecreasing(CreateRandomListOfRectangles(24)), 1500, 500);
         }
 
         private List<RectangleModel> SetRectanglesLocation(List<RectangleModel> rectangles, int stWidth, int sHeight)
         {
             int sheetWidth = stWidth;
             int sheetHeight = sHeight;
-            bool firstIteration = false;
             List<int> borderRectangles = new List<int>() { 0 };
-            List<int> columnRectangles = new List<int>();
-
-
-            //for (int i = 0; i < rectangles.Count; i++)
-            //{
-
-
-
-            //    if (firstIteration)
-            //    {
-            //        //if (heightOffset + rectangles[i].Size.Height <= sheetHeight)
-            //        //{
-            //        //    rectangles[i-1].Location = new Point(widthOffset, heightOffset);
-
-            //        //    heightOffset += rectangles[i].Size.Height;
-            //        //    //rectangles[i].Location = new Point(widthOffset, heightOffset - rectangles[i].Size.Height);
-
-            //        //}
-            //        if (heightOffset + rectangles[i].Size.Height <= sheetHeight)
-            //        {
-            //            rectangles[i].Location = new Point(widthOffset, heightOffset);
-            //            heightOffset += rectangles[i].Size.Height;
-            //        }
-            //        else
-            //        {
-            //            if (widthOffset + rectangles[i].Size.Width <= sheetWidth)
-            //            {
-            //                widthOffset = 0;
-
-            //                foreach (var borderRectangle in borderRectangles)
-            //                {
-            //                    widthOffset += rectangles[borderRectangle].Size.Width;
-            //                }
-
-            //                borderRectangles.Add(i);
-            //                heightOffset = 0 - rectangles[i - 1].Size.Height;
-
-            //                i--;
-            //            }
-            //            else
-            //            {
-            //                //TODO
-            //            }
-
-            //        }
-
-            //    }
-            //    else
-            //    {
-            //        rectangles[i].Location = new Point(0, 0);
-            //        heightOffset += rectangles[0].Size.Height;
-            //    }
-
-            //    firstIteration = true;
-            //}
             int heightOffset = 0;
             int widthOffset = 0;
 
@@ -88,10 +32,15 @@ namespace RectangleSpreadController
                 }
                 else //offset to the right
                 {
-                    widthOffset = rectangles[0].Size.Width;
-                    i--;
+                    widthOffset = 0;
+                    foreach (var bRectangle in borderRectangles)
+                    {
+                        widthOffset = widthOffset + rectangles[bRectangle].Size.Width;
+                    }
+
+                    borderRectangles.Add(i);
                     heightOffset = 0;
-                    //pass = true;
+                    i--;
                 }
             }
 

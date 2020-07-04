@@ -36,10 +36,9 @@
             // 
             // startAssemble
             // 
-            this.startAssemble.Location = new System.Drawing.Point(13, 13);
-            this.startAssemble.Margin = new System.Windows.Forms.Padding(4);
+            this.startAssemble.Location = new System.Drawing.Point(10, 11);
             this.startAssemble.Name = "startAssemble";
-            this.startAssemble.Size = new System.Drawing.Size(100, 28);
+            this.startAssemble.Size = new System.Drawing.Size(75, 23);
             this.startAssemble.TabIndex = 0;
             this.startAssemble.Text = "Assemble";
             this.startAssemble.UseVisualStyleBackColor = true;
@@ -47,8 +46,7 @@
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Location = new System.Drawing.Point(13, 49);
-            this.pictureBox1.Margin = new System.Windows.Forms.Padding(4);
+            this.pictureBox1.Location = new System.Drawing.Point(10, 40);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(1500, 500);
             this.pictureBox1.TabIndex = 1;
@@ -56,9 +54,10 @@
             // 
             // generateJson
             // 
-            this.generateJson.Location = new System.Drawing.Point(120, 13);
+            this.generateJson.Location = new System.Drawing.Point(90, 11);
+            this.generateJson.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.generateJson.Name = "generateJson";
-            this.generateJson.Size = new System.Drawing.Size(133, 28);
+            this.generateJson.Size = new System.Drawing.Size(100, 23);
             this.generateJson.TabIndex = 2;
             this.generateJson.Text = "Generate Json";
             this.generateJson.UseVisualStyleBackColor = true;
@@ -66,13 +65,12 @@
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1355, 561);
+            this.ClientSize = new System.Drawing.Size(1505, 549);
             this.Controls.Add(this.generateJson);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.startAssemble);
-            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Form1";
             this.Text = "Form1";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
