@@ -20,9 +20,15 @@ namespace SheetCutting
             using (Graphics formGraphics = Graphics.FromImage(image))
             {
                 List<RectangleModel> sortedRectangles = r.AssembledRectangles();
+                List<LineModel> sortedLines = r.AssembledLines();
                 foreach (var rectangle in sortedRectangles)
                 {
                     DrawRectangle(rectangle.Location, rectangle.Size, formGraphics);
+                }
+
+                foreach (var line in sortedLines)
+                {
+                    DrawLines(line, formGraphics);
                 }
             }
 
@@ -36,8 +42,15 @@ namespace SheetCutting
             formGraphics.DrawRectangle(new Pen(Color.Black, 0), rect);
             formGraphics.FillRectangle(myBrush, rect);
             myBrush.Dispose();
+        }
 
-          
+        public static void DrawLines(LineModel line ,Graphics formGraphics)
+        {
+            //SolidBrush myBrush = new SolidBrush(Color.FromArgb(GetRandomNumber(1, 255), GetRandomNumber(1, 255), GetRandomNumber(1, 255)));
+            //Rectangle rect = new Rectangle(location, size);
+            formGraphics.DrawLine(new Pen(Color.Red, 1), line.startLocation, line.endLocation);
+            //formGraphics.FillRectangle(myBrush, rect);
+            //myBrush.Dispose();
         }
 
         public void GenerateJson()

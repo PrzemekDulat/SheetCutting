@@ -15,6 +15,11 @@ namespace RectangleSpreadController
             return SetRectanglesLocation(SortRectanglesDecreasing(CreateRandomListOfRectangles(24)), 1500, 500);
         }
 
+        public List<LineModel> AssembledLines()
+        {
+            return SetLinesLocation(AssembledRectangles());
+        }
+
         private List<RectangleModel> SetRectanglesLocation(List<RectangleModel> rectangles, int stWidth, int sHeight)
         {
             int sheetWidth = stWidth;
@@ -45,6 +50,30 @@ namespace RectangleSpreadController
             }
 
             return rectangles;
+        }
+        public List<LineModel> SetLinesLocation(List<RectangleModel> rectangles)
+        {
+            List<LineModel> lines = new List<LineModel>();
+
+            //foreach (var rectangle in rectangles)
+            //{
+            //    LineModel line = new LineModel();
+            //    line.startLocation = new Point(rectangle.Location.X + rectangle.Size.Width, rectangle.Location.Y + rectangle.Size.Height);
+            //    line.endLocation = new Point(rectangle.Location.X + rectangle.Size.Width, 500);
+
+            //    line.startLocation = new Point(rectangle.Size.Width, rectangle.Size.Height);
+            //    line.endLocation = new Point(rectangle.Size.Width, 500);
+            //    lines.Add(line);
+            //}
+            LineModel line = new LineModel();
+            line.startLocation = new Point(rectangles[0].Size.Width,0);
+            line.endLocation = new Point(rectangles[0].Size.Width, 1500);
+
+            //line.startLocation = new Point(100, 0);
+            //line.endLocation = new Point(100, 500);
+            lines.Add(line);
+
+            return lines;
         }
 
         private List<RectangleModel> SortRectanglesDecreasing(List<RectangleModel> rectangles)
