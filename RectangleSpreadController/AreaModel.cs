@@ -5,10 +5,11 @@ using System.Text;
 
 namespace RectangleSpreadController
 {
-    public class RectangleModel
+    public class AreaModel
     {
-        public Point Location { get; set; }
         public Size Size { get; set; }
-        public string orederNumber { get; set; }
+        public Point Location { get; set; }
+        public List<RectangleModel> Rectangles { get; set; }
+        public List<WasteModel> Waste { get; set; }
     }
 }

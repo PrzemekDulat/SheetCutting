@@ -21,6 +21,8 @@ namespace SheetCutting
             {
                 var sortedRectangles = rectangleSorter.GenerateRandomRectanglesAndPositionThem();
                 var sortedLines = rectangleSorter.AssembledLines(sortedRectangles);
+                var rectangleLines = rectangleSorter.RectangleLines(sortedRectangles);
+                var okayLines = rectangleSorter.OkayLines(sortedRectangles);
                 foreach (var rectangle in sortedRectangles)
                 {
                     DrawRectangle(rectangle.Location, rectangle.Size, formGraphics);
@@ -28,8 +30,19 @@ namespace SheetCutting
 
                 foreach (var line in sortedLines)
                 {
-                    DrawLines(line, formGraphics);
+                    DrawLines(line, formGraphics, Color.Red, 1);
                 }
+
+                foreach (var line in rectangleLines)
+                {
+                    DrawLines(line, formGraphics, Color.Yellow, 3);
+                }
+                foreach (var line in okayLines)
+                {
+                    DrawLines(line, formGraphics, Color.Black, 10);
+                }
+
+                var areas = rectangleSorter.CreateAreasBasedOnLines(okayLines);
             }
 
             return image;
@@ -51,11 +64,11 @@ namespace SheetCutting
             myBrush.Dispose();
         }
 
-        public static void DrawLines(LineModel line, Graphics formGraphics)
+        public static void DrawLines(LineModel line, Graphics formGraphics, Color color, int width)
         {
             //SolidBrush myBrush = new SolidBrush(Color.FromArgb(GetRandomNumber(1, 255), GetRandomNumber(1, 255), GetRandomNumber(1, 255)));
             //Rectangle rect = new Rectangle(location, size);
-            formGraphics.DrawLine(new Pen(Color.Red, 1), line.startLocation, line.endLocation);
+            formGraphics.DrawLine(new Pen(color, width), line.StartLocation, line.EndLocation);
             //formGraphics.FillRectangle(myBrush, rect);
             //myBrush.Dispose();
         }
