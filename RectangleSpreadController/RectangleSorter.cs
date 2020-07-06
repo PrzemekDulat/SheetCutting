@@ -185,10 +185,11 @@ namespace RectangleSpreadController
         {
             List<AreaModel> areas = new List<AreaModel>();
 
-            AreaModel area = new AreaModel();
 
             for (int i = 0; i < okLines.Count - 1; i++)
             {
+                AreaModel area = new AreaModel();
+
                 area.Location = okLines[i].StartLocation;
                 area.Size = new Size(okLines[i+1].StartLocation.X - okLines[i].StartLocation.X, okLines[i].EndLocation.Y);
 
