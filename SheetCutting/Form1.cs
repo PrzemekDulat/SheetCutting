@@ -12,7 +12,7 @@ namespace SheetCutting
 {
     public partial class Form1 : Form
     {
-        Adapter adapter = new Adapter();
+        ViewModel adapter = new ViewModel();
         public Form1()
         {
             InitializeComponent();
@@ -26,7 +26,7 @@ namespace SheetCutting
 
         private void generateJson_Click(object sender, EventArgs e)
         {
-            adapter.GenerateJson();
+            adapter.GenerateJson(adapter.GenerateRandomRectanglesAndPositionThem());
         }
     }
 }

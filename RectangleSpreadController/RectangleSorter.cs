@@ -10,46 +10,55 @@ namespace RectangleSpreadController
 {
     public class RectangleSorter
     {
-        public List<RectangleModel> AssembledRectangles()
+        public List<RectangleModel> GenerateRandomRectanglesAndPositionThem()
         {
-            return SetRectanglesLocation(SortRectanglesDecreasing(CreateRandomListOfRectangles(24)), 1500, 500);
+            List<RectangleModel> rectangles = CreateRandomListOfRectangles(24);
+            List<RectangleModel> rectanglesDesc = SortRectanglesDecreasing(rectangles);
+            List<RectangleModel> rectanglesPositioned = SetupRectanglesLocation(rectanglesDesc, 1500, 500);
+            return rectanglesPositioned;
         }
 
-        public List<LineModel> AssembledLines()
+        public List<LineModel> AssembledLines(List<RectangleModel> rectangles)
         {
-            return SetLinesLocation(AssembledRectangles());
+            return SetLinesLocation(rectangles);
         }
 
-        private List<RectangleModel> SetRectanglesLocation(List<RectangleModel> rectangles, int stWidth, int sHeight)
+        private List<RectangleModel> SetupRectanglesLocation(List<RectangleModel> rectangles, int stWidth, int sHeight)
         {
             int sheetWidth = stWidth;
             int sheetHeight = sHeight;
-            List<int> borderRectangles = new List<int>() { 0 };
+            List<RectangleModel> firstsInColumns = new List<RectangleModel>();
             int heightOffset = 0;
             int widthOffset = 0;
-
-            for (int i = 0; i < rectangles.Count; i++)
+            firstsInColumns.Add(rectangles.First());
+            foreach (RectangleModel rectangleModel in rectangles)
             {
-                if (rectangles[i].Size.Height + heightOffset <= sheetHeight) //fits by height
+                if (rectangleModel.Size.Height <= CalculateRemainingHeight()) //fits by height
                 {
-                    rectangles[i].Location = new Point(widthOffset, heightOffset);
-                    heightOffset = heightOffset + rectangles[i].Size.Height;
+                    rectangleModel.Location = new Point(widthOffset, heightOffset);
+                    heightOffset += rectangleModel.Size.Height;
                 }
                 else //offset to the right
                 {
                     widthOffset = 0;
-                    foreach (var bRectangle in borderRectangles)
+                    foreach (var bRectangle in firstsInColumns)
                     {
-                        widthOffset = widthOffset + rectangles[bRectangle].Size.Width;
+                        widthOffset += bRectangle.Size.Width;
                     }
 
-                    borderRectangles.Add(i);
+                    firstsInColumns.Add(rectangleModel);
                     heightOffset = 0;
-                    i--;
+                    rectangleModel.Location = new Point(widthOffset, heightOffset);
+                    heightOffset += rectangleModel.Size.Height;
                 }
             }
 
             return rectangles;
+
+            int CalculateRemainingHeight()
+            {
+                return sheetHeight - heightOffset;
+            }
         }
         public List<LineModel> SetLinesLocation(List<RectangleModel> rectangles)
         {
