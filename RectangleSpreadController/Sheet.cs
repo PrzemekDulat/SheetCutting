@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
@@ -48,10 +49,38 @@ namespace RectangleSpreadController
             return sheets;
         }
 
-        public ICutLine[] GetCutLines(OrderRelatedElement[] orderRelatedElements)
+        public ICutLine[] GetCutLines(Sheet sheet)
         {
+            OrderRelatedElement[] orderRelatedElements = sheet.OrderRelatedElements;
+            Point sheetLocation = sheet.Location;
+            Size sheetSize = sheet.Size;
+
+            List<LineM> lines = new List<LineM>();
+            //get horizontal lines
+            foreach (var item in orderRelatedElements)
+            {
+                lines.Add(LineM.CreateLine(LineType.Horizontal, item.Location.Y));
+                lines.Add(LineM.CreateLine(LineType.Horizontal, item.Location.Y + item.Size.Height));
+            }
+            //get vertical lines
+            foreach (var item in orderRelatedElements)
+            {
+                lines.Add(LineM.CreateLine(LineType.Vertical, item.Location.X));
+                lines.Add(LineM.CreateLine(LineType.Vertical, item.Location.X + item.Size.Width));
+            }
+            //filter out lines that are the same as borders
+            List<LineM> linesToRemove = new List<LineM>();
+
+            List<LineM> notValidLines = new List<LineM>();
+            notValidLines.Add(LineM.CreateLine(LineType.Vertical, sheetLocation.X));
+            notValidLines.Add(LineM.CreateLine(LineType.Vertical, sheetLocation.X + sheetSize.Width));
+            notValidLines.Add(LineM.CreateLine(LineType.Horizontal, sheetLocation.Y));
+            notValidLines.Add(LineM.CreateLine(LineType.Horizontal, sheetLocation.Y + sheetSize.Height));
+
+            List<LineM> resultList = lines.Except(notValidLines).ToList();
+
+            return resultList.ToArray();
             //TODO create all cutlines from trectangles but filter out lines with that goes throu location or location plus size 
-            throw new NotImplementedException();
 
         }
 
@@ -62,6 +91,11 @@ namespace RectangleSpreadController
 
         private static bool CheckIfLineIsValidCutLine(ICutLine cutLine)
         {
+            //todo
+            if (cutLine.LineType == LineType.Horizontal)
+            {
+                
+            }
             throw new NotImplementedException();
         }
 

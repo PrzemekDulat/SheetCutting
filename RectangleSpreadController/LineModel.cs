@@ -9,7 +9,6 @@ namespace RectangleSpreadController
     {
         public Point StartLocation { get; set; }
         public Point EndLocation { get; set; }
-
         private LineModel(Point startLocation, Point endLocation)
         {
             StartLocation = startLocation;

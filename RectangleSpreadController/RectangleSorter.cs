@@ -20,6 +20,18 @@ namespace RectangleSpreadController
         }
         
 
+        public OrderRelatedElement[] SampleDataSet()
+        {
+            OrderRelatedElement[] orderRelatedElements = new OrderRelatedElement[3];
+
+            orderRelatedElements[0] = new OrderRelatedElement(new Point(0, 0), new Size(200, 300), "No.1");
+            orderRelatedElements[1] = new OrderRelatedElement(new Point(0, 300), new Size(200, 300), "No.2");
+            orderRelatedElements[2] = new OrderRelatedElement(new Point(600, 500), new Size(200, 300), "No.3");
+            orderRelatedElements[3] = new OrderRelatedElement(new Point(800, 1200), new Size(200, 300), "No.4");
+
+            return orderRelatedElements;
+        }
+
         public void CutExample(OrderRelatedElement[] orderRelatedElements)
         {
 
@@ -32,7 +44,7 @@ namespace RectangleSpreadController
         private static ISheet[] CutSheetIntoPieces(Sheet sheet)
         {
             List<ISheet> result = new List<ISheet>();
-            var cutLine = sheet.GetFirstValidCutLine(sheet.GetCutLines(sheet.OrderRelatedElements));
+            var cutLine = sheet.GetFirstValidCutLine(sheet.GetCutLines(sheet));
             var innerSheets = Sheet.CutSheet(sheet, cutLine);
 
             foreach (var item in innerSheets)
