@@ -9,7 +9,7 @@ namespace RectangleSpreadController
     {
         public Size Size { get; set; }
         public Point Location { get; set; }
-        public List<RectangleModel> Rectangles { get; set; }
-        public List<WasteModel> Waste { get; set; }
+        public List<RectangleModel> Rectangles { get; set; } = new List<RectangleModel>();
+        public List<WasteModel> Waste { get; set; } = new List<WasteModel>();
     }
 }

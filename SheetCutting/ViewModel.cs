@@ -16,33 +16,49 @@ namespace SheetCutting
         public Image StartAssemblingRectangles()
         {
             var rectangleSorter = new RectangleSorter();
+            var areaCreator = new AreaCreator();
             Image image = new Bitmap(1500, 500);
             using (Graphics formGraphics = Graphics.FromImage(image))
             {
                 var sortedRectangles = rectangleSorter.GenerateRandomRectanglesAndPositionThem();
-                var sortedLines = rectangleSorter.AssembledLines(sortedRectangles);
-                var rectangleLines = rectangleSorter.RectangleLines(sortedRectangles);
-                var okayLines = rectangleSorter.OkayLines(sortedRectangles);
+                var sortedLines = areaCreator.AssembledLines(sortedRectangles);
+                var rectangleHorizontalLines = areaCreator.HorizontalRectangleLines(sortedRectangles);
+                var rectangleVerticalLines = areaCreator.VerticalRectangleLines(sortedRectangles);
+
+                var verticalCuttingLines = areaCreator.VerticalCuttingLines(sortedRectangles);
+                var horizontalCuttingLines = areaCreator.HorizontalCuttingLines(sortedRectangles);
                 foreach (var rectangle in sortedRectangles)
                 {
                     DrawRectangle(rectangle.Location, rectangle.Size, formGraphics);
                 }
 
-                foreach (var line in sortedLines)
-                {
-                    DrawLines(line, formGraphics, Color.Red, 1);
-                }
+                //foreach (var line in sortedLines)
+                //{
+                //    DrawLines(line, formGraphics, Color.Red, 1);
+                //}
 
-                foreach (var line in rectangleLines)
-                {
-                    DrawLines(line, formGraphics, Color.Yellow, 3);
-                }
-                foreach (var line in okayLines)
-                {
-                    DrawLines(line, formGraphics, Color.Black, 10);
-                }
+                //foreach (var line in rectangleHorizontalLines)
+                //{
+                //    DrawLines(line, formGraphics, Color.Yellow, 3);
+                //}
 
-                var areas = rectangleSorter.CreateAreasBasedOnLines(okayLines);
+                //foreach (var line in rectangleVerticalLines)
+                //{
+                //    DrawLines(line, formGraphics, Color.Yellow, 3);
+                //}
+                //foreach (var line in verticalCuttingLines)
+                //{
+                //    DrawLines(line, formGraphics, Color.Black, 10);
+                //}
+                foreach (var line in horizontalCuttingLines)
+                {
+                    DrawLines(line, formGraphics, Color.Red, 2);
+                }
+                
+
+                var areas = areaCreator.CreateAreasBasedOnVerticalLines(verticalCuttingLines);
+                var areasWithRectangles = areaCreator.DetermineRectangleInArea(areas, sortedRectangles);
+                areaCreator.CutAreasHorizontaly(areasWithRectangles);
             }
 
             return image;
