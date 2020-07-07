@@ -11,23 +11,57 @@ namespace RectangleSpreadController
 {
     public class RectangleSorter
     {
-        public List<RectangleModel> GenerateRandomRectanglesAndPositionThem()
+        public List<OrderRelatedElement> GenerateRandomRectanglesAndPositionThem()
         {
-            List<RectangleModel> rectangles = CreateRandomListOfRectangles(8);
-            List<RectangleModel> rectanglesDesc = SortRectanglesDecreasing(rectangles);
-            List<RectangleModel> rectanglesPositioned = SetupRectanglesLocation(rectanglesDesc, 1500, 500);
+            List<OrderRelatedElement> rectangles = CreateRandomListOfRectangles(8);
+            List<OrderRelatedElement> rectanglesDesc = SortRectanglesDecreasing(rectangles);
+            List<OrderRelatedElement> rectanglesPositioned = SetupRectanglesLocation(rectanglesDesc, 1500, 500);
             return rectanglesPositioned;
         }
         
-        private List<RectangleModel> SetupRectanglesLocation(List<RectangleModel> rectangles, int stWidth, int sHeight)
+
+        public void CutExample(OrderRelatedElement[] orderRelatedElements)
+        {
+
+            Sheet sheet = Sheet.CreateNewSheet(orderRelatedElements, default, new Size(1000, 1500));
+
+            CutSheetIntoPieces(sheet);
+
+        }
+
+        private static ISheet[] CutSheetIntoPieces(Sheet sheet)
+        {
+            List<ISheet> result = new List<ISheet>();
+            var cutLine = sheet.GetFirstValidCutLine(sheet.GetCutLines(sheet.OrderRelatedElements));
+            var innerSheets = Sheet.CutSheet(sheet, cutLine);
+
+            foreach (var item in innerSheets)
+            {
+                switch (item)
+                {
+                    case Waste waste:
+                        result.Add(waste);
+                        break;
+                    case OrderRelatedElement orderElement:
+                        result.Add(orderElement);
+                        break;
+                    case Sheet innerSheet:
+                        result.AddRange(CutSheetIntoPieces(innerSheet));
+                        break;
+                }
+            }
+            return result.ToArray();
+        }
+
+        private List<OrderRelatedElement> SetupRectanglesLocation(List<OrderRelatedElement> rectangles, int stWidth, int sHeight)
         {
             int sheetWidth = stWidth;
             int sheetHeight = sHeight;
-            List<RectangleModel> firstsInColumns = new List<RectangleModel>();
+            List<OrderRelatedElement> firstsInColumns = new List<OrderRelatedElement>();
             int heightOffset = 0;
             int widthOffset = 0;
             firstsInColumns.Add(rectangles.First());
-            foreach (RectangleModel rectangleModel in rectangles)
+            foreach (OrderRelatedElement rectangleModel in rectangles)
             {
                 if (rectangleModel.Size.Height <= CalculateRemainingHeight()) //fits by height
                 {
@@ -57,7 +91,7 @@ namespace RectangleSpreadController
             }
         }
 
-        private List<RectangleModel> SortRectanglesDecreasing(List<RectangleModel> rectangles)
+        private List<OrderRelatedElement> SortRectanglesDecreasing(List<OrderRelatedElement> rectangles)
         {
             foreach (var rectangle in rectangles)
             {
@@ -68,19 +102,19 @@ namespace RectangleSpreadController
                     rectangle.Size = new Size(tmpSize.Height, tmpSize.Width);
                 }
             }
-            List<RectangleModel> sortedRectangles = rectangles.OrderByDescending(o => o.Size.Width).ToList();
+            List<OrderRelatedElement> sortedRectangles = rectangles.OrderByDescending(o => o.Size.Width).ToList();
 
             return sortedRectangles;
         }
-        public List<RectangleModel> CreateRandomListOfRectangles(int numberOfRectangles)
+        public List<OrderRelatedElement> CreateRandomListOfRectangles(int numberOfRectangles)
         {
             if (numberOfRectangles < 0) { throw new ArgumentException(nameof(numberOfRectangles)); }
        
-            List<RectangleModel> rectangles = new List<RectangleModel>();
+            List<OrderRelatedElement> rectangles = new List<OrderRelatedElement>();
 
             for (int i = 0; i < numberOfRectangles; i++)
             {
-                RectangleModel rectangle = new RectangleModel();
+                OrderRelatedElement rectangle = new OrderRelatedElement();
                 rectangle.Location = new Point(0, 0);
                 rectangle.Size = new Size(GetRandomNumber(50, 200), GetRandomNumber(50, 200));
                 rectangles.Add(rectangle);

@@ -8,23 +8,23 @@ namespace RectangleSpreadController
 {
     public class AreaCreator
     {
-        public List<LineModel> AssembledLines(List<RectangleModel> rectangles)
+        public List<LineModel> AssembledLines(List<OrderRelatedElement> rectangles)
         {
             return SetLinesLocation(rectangles);
         }
-        public List<LineModel> HorizontalRectangleLines(List<RectangleModel> rectangles)
+        public List<LineModel> HorizontalRectangleLines(List<OrderRelatedElement> rectangles)
         {
             return DetermineHorizontalLinesOfRectangles(rectangles);
         }
-        public List<LineModel> VerticalRectangleLines(List<RectangleModel> rectangles)
+        public List<LineModel> VerticalRectangleLines(List<OrderRelatedElement> rectangles)
         {
             return DetermineVerticalLinesOfRectangles(rectangles);
         }
-        public List<LineModel> VerticalCuttingLines(List<RectangleModel> rectangles)
+        public List<LineModel> VerticalCuttingLines(List<OrderRelatedElement> rectangles)
         {
             return CheckIfVerticalLinesIntersect(SetVerticalLinesLocation(rectangles, 500), DetermineHorizontalLinesOfRectangles(rectangles));
         }
-        public List<LineModel> HorizontalCuttingLines(List<RectangleModel> rectangles)
+        public List<LineModel> HorizontalCuttingLines(List<OrderRelatedElement> rectangles)
         {
             return CheckIfHorizontalLinesIntersect(SetHorizontalLinesLocation(rectangles, 1500), DetermineVerticalLinesOfRectangles(rectangles));
         }
@@ -32,13 +32,13 @@ namespace RectangleSpreadController
 
 
 
-        public List<LineModel> SetLinesLocation(List<RectangleModel> rectangles)
+        public List<LineModel> SetLinesLocation(List<OrderRelatedElement> rectangles)
         {
             List<LineModel> allLines = SetVerticalLinesLocation(rectangles, 500);
 
             return allLines.Concat(SetHorizontalLinesLocation(rectangles, 1500)).ToList();
         }
-        public List<LineModel> SetVerticalLinesLocation(List<RectangleModel> rectangles, int sheetHeight)
+        public List<LineModel> SetVerticalLinesLocation(List<OrderRelatedElement> rectangles, int sheetHeight)
         {
             List<LineModel> lines = new List<LineModel>();
 
@@ -58,7 +58,7 @@ namespace RectangleSpreadController
 
             return lines;
         }
-        public List<LineModel> SetHorizontalLinesLocation(List<RectangleModel> rectangles, int sheetWidth)
+        public List<LineModel> SetHorizontalLinesLocation(List<OrderRelatedElement> rectangles, int sheetWidth)
         {
             List<LineModel> lines = new List<LineModel>();
 
@@ -83,7 +83,7 @@ namespace RectangleSpreadController
 
 
 
-        public List<LineModel> DetermineHorizontalLinesOfRectangles(List<RectangleModel> rectangles)
+        public List<LineModel> DetermineHorizontalLinesOfRectangles(List<OrderRelatedElement> rectangles)
         {
             List<LineModel> lines = new List<LineModel>();
             foreach (var rectangle in rectangles)
@@ -101,7 +101,7 @@ namespace RectangleSpreadController
             }
             return lines;
         }
-        public List<LineModel> DetermineVerticalLinesOfRectangles(List<RectangleModel> rectangles)
+        public List<LineModel> DetermineVerticalLinesOfRectangles(List<OrderRelatedElement> rectangles)
         {
             List<LineModel> lines = new List<LineModel>();
             foreach (var rectangle in rectangles)
@@ -194,7 +194,7 @@ namespace RectangleSpreadController
             for (int i = 0; i < horizontalCuttingLines.Count - 1; i++)
             {
                 AreaModel area = new AreaModel();
-                area.Location = new Point(/*width poprzedniej arei*/widthOfPreviousArea, );
+                area.Location = new Point(/*width poprzedniej arei*/widthOfPreviousArea, default );
                 area.Location = horizontalCuttingLines[i].StartLocation; // to trzeba poprawic, bo dla pierwszej arei to dziala ale dla drugiej znowu jest  (0,0)
                 area.Size = new Size(horizontalCuttingLines[i].EndLocation.X - horizontalCuttingLines[i].StartLocation.X,horizontalCuttingLines[i + 1].StartLocation.Y - horizontalCuttingLines[i].StartLocation.Y);
                 areas.Add(area);
@@ -206,7 +206,7 @@ namespace RectangleSpreadController
 
 
 
-        public List<AreaModel> DetermineRectangleInArea(List<AreaModel> areas, List<RectangleModel> rectangles)
+        public List<AreaModel> DetermineRectangleInArea(List<AreaModel> areas, List<OrderRelatedElement> rectangles)
         {
             foreach (var area in areas)
             {

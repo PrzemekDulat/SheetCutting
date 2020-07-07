@@ -64,7 +64,7 @@ namespace SheetCutting
             return image;
         }
 
-        internal List<RectangleModel> GenerateRandomRectanglesAndPositionThem()
+        internal List<OrderRelatedElement> GenerateRandomRectanglesAndPositionThem()
         {
             var rectangleSorter = new RectangleSorter();
             return  rectangleSorter.GenerateRandomRectanglesAndPositionThem();
@@ -89,7 +89,7 @@ namespace SheetCutting
             //myBrush.Dispose();
         }
 
-        public void GenerateJson(List<RectangleModel> rectangles)
+        public void GenerateJson(List<OrderRelatedElement> rectangles)
         {
             string path = @"C:\Users\PERMAR\source\repos\SheetCutting\" + RandomString(10) + ".txt";
             if (!File.Exists(path))
