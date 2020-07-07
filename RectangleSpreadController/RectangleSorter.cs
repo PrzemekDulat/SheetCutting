@@ -11,18 +11,18 @@ namespace RectangleSpreadController
 {
     public class RectangleSorter
     {
-        public List<OrderRelatedElement> GenerateRandomRectanglesAndPositionThem()
-        {
-            List<OrderRelatedElement> rectangles = CreateRandomListOfRectangles(8);
-            List<OrderRelatedElement> rectanglesDesc = SortRectanglesDecreasing(rectangles);
-            List<OrderRelatedElement> rectanglesPositioned = SetupRectanglesLocation(rectanglesDesc, 1500, 500);
-            return rectanglesPositioned;
-        }
+        //public List<OrderRelatedElement> GenerateRandomRectanglesAndPositionThem()
+        //{
+        //    List<OrderRelatedElement> rectangles = CreateRandomListOfRectangles(8);
+        //    List<OrderRelatedElement> rectanglesDesc = SortRectanglesDecreasing(rectangles);
+        //    List<OrderRelatedElement> rectanglesPositioned = SetupRectanglesLocation(rectanglesDesc, 1500, 500);
+        //    return rectanglesPositioned;
+        //}
         
 
         public OrderRelatedElement[] SampleDataSet()
         {
-            OrderRelatedElement[] orderRelatedElements = new OrderRelatedElement[3];
+            OrderRelatedElement[] orderRelatedElements = new OrderRelatedElement[4];
 
             orderRelatedElements[0] = new OrderRelatedElement(new Point(0, 0), new Size(200, 300), "No.1");
             orderRelatedElements[1] = new OrderRelatedElement(new Point(0, 300), new Size(200, 300), "No.2");
@@ -65,83 +65,82 @@ namespace RectangleSpreadController
             return result.ToArray();
         }
 
-        private List<OrderRelatedElement> SetupRectanglesLocation(List<OrderRelatedElement> rectangles, int stWidth, int sHeight)
-        {
-            int sheetWidth = stWidth;
-            int sheetHeight = sHeight;
-            List<OrderRelatedElement> firstsInColumns = new List<OrderRelatedElement>();
-            int heightOffset = 0;
-            int widthOffset = 0;
-            firstsInColumns.Add(rectangles.First());
-            foreach (OrderRelatedElement rectangleModel in rectangles)
-            {
-                if (rectangleModel.Size.Height <= CalculateRemainingHeight()) //fits by height
-                {
-                    rectangleModel.Location = new Point(widthOffset, heightOffset);
-                    heightOffset += rectangleModel.Size.Height;
-                }
-                else //offset to the right
-                {
-                    widthOffset = 0;
-                    foreach (var bRectangle in firstsInColumns)
-                    {
-                        widthOffset += bRectangle.Size.Width;
-                    }
+        //private List<OrderRelatedElement> SetupRectanglesLocation(List<OrderRelatedElement> rectangles, int stWidth, int sHeight)
+        //{
+        //    int sheetWidth = stWidth;
+        //    int sheetHeight = sHeight;
+        //    List<OrderRelatedElement> firstsInColumns = new List<OrderRelatedElement>();
+        //    int heightOffset = 0;
+        //    int widthOffset = 0;
+        //    firstsInColumns.Add(rectangles.First());
+        //    foreach (OrderRelatedElement rectangleModel in rectangles)
+        //    {
+        //        if (rectangleModel.Size.Height <= CalculateRemainingHeight()) //fits by height
+        //        {
+        //            rectangleModel.Location = new Point(widthOffset, heightOffset);
+        //            heightOffset += rectangleModel.Size.Height;
+        //        }
+        //        else //offset to the right
+        //        {
+        //            widthOffset = 0;
+        //            foreach (var bRectangle in firstsInColumns)
+        //            {
+        //                widthOffset += bRectangle.Size.Width;
+        //            }
 
-                    firstsInColumns.Add(rectangleModel);
-                    heightOffset = 0;
-                    rectangleModel.Location = new Point(widthOffset, heightOffset);
-                    heightOffset += rectangleModel.Size.Height;
-                }
-            }
+        //            firstsInColumns.Add(rectangleModel);
+        //            heightOffset = 0;
+        //            rectangleModel.Location = new Point(widthOffset, heightOffset);
+        //            heightOffset += rectangleModel.Size.Height;
+        //        }
+        //    }
 
-            return rectangles;
+        //    return rectangles;
 
-            int CalculateRemainingHeight()
-            {
-                return sheetHeight - heightOffset;
-            }
-        }
+        //    int CalculateRemainingHeight()
+        //    {
+        //        return sheetHeight - heightOffset;
+        //    }
+        //}
+        //private List<OrderRelatedElement> SortRectanglesDecreasing(List<OrderRelatedElement> rectangles)
+        //{
+        //    foreach (var rectangle in rectangles)
+        //    {
+        //        if (rectangle.Size.Height > rectangle.Size.Width)
+        //        {
+        //            Size tmpSize = new Size();
+        //            tmpSize = rectangle.Size;
+        //            rectangle.Size = new Size(tmpSize.Height, tmpSize.Width);
+        //        }
+        //    }
+        //    List<OrderRelatedElement> sortedRectangles = rectangles.OrderByDescending(o => o.Size.Width).ToList();
 
-        private List<OrderRelatedElement> SortRectanglesDecreasing(List<OrderRelatedElement> rectangles)
-        {
-            foreach (var rectangle in rectangles)
-            {
-                if (rectangle.Size.Height > rectangle.Size.Width)
-                {
-                    Size tmpSize = new Size();
-                    tmpSize = rectangle.Size;
-                    rectangle.Size = new Size(tmpSize.Height, tmpSize.Width);
-                }
-            }
-            List<OrderRelatedElement> sortedRectangles = rectangles.OrderByDescending(o => o.Size.Width).ToList();
-
-            return sortedRectangles;
-        }
-        public List<OrderRelatedElement> CreateRandomListOfRectangles(int numberOfRectangles)
-        {
-            if (numberOfRectangles < 0) { throw new ArgumentException(nameof(numberOfRectangles)); }
+        //    return sortedRectangles;
+        //}
+        //public List<OrderRelatedElement> CreateRandomListOfRectangles(int numberOfRectangles)
+        //{
+        //    if (numberOfRectangles < 0) { throw new ArgumentException(nameof(numberOfRectangles)); }
        
-            List<OrderRelatedElement> rectangles = new List<OrderRelatedElement>();
+        //    List<OrderRelatedElement> rectangles = new List<OrderRelatedElement>();
 
-            for (int i = 0; i < numberOfRectangles; i++)
-            {
-                OrderRelatedElement rectangle = new OrderRelatedElement();
-                rectangle.Location = new Point(0, 0);
-                rectangle.Size = new Size(GetRandomNumber(50, 200), GetRandomNumber(50, 200));
-                rectangles.Add(rectangle);
-            }
-            return rectangles;
-        }
+        //    for (int i = 0; i < numberOfRectangles; i++)
+        //    {
+        //        OrderRelatedElement rectangle = new OrderRelatedElement();
+        //        rectangle.Location = new Point(0, 0);
+        //        rectangle.Size = new Size(GetRandomNumber(50, 200), GetRandomNumber(50, 200));
+        //        rectangles.Add(rectangle);
+        //    }
+        //    return rectangles;
+        //}
         
-        private static readonly Random getrandom = new Random();
-        public static int GetRandomNumber(int min, int max)
-        {
-            lock (getrandom)
-            {
-                return getrandom.Next(min, max);
-            }
-        }
+        //private static readonly Random getrandom = new Random();
+        //public static int GetRandomNumber(int min, int max)
+        //{
+        //    lock (getrandom)
+        //    {
+        //        return getrandom.Next(min, max);
+        //    }
+        //}
 
     }
 }

@@ -8,23 +8,23 @@ namespace RectangleSpreadController
 {
     public class AreaCreator
     {
-        public List<LineModel> AssembledLines(List<OrderRelatedElement> rectangles)
+        public List<LineModelOld> AssembledLines(List<OrderRelatedElement> rectangles)
         {
             return SetLinesLocation(rectangles);
         }
-        public List<LineModel> HorizontalRectangleLines(List<OrderRelatedElement> rectangles)
+        public List<LineModelOld> HorizontalRectangleLines(List<OrderRelatedElement> rectangles)
         {
             return DetermineHorizontalLinesOfRectangles(rectangles);
         }
-        public List<LineModel> VerticalRectangleLines(List<OrderRelatedElement> rectangles)
+        public List<LineModelOld> VerticalRectangleLines(List<OrderRelatedElement> rectangles)
         {
             return DetermineVerticalLinesOfRectangles(rectangles);
         }
-        public List<LineModel> VerticalCuttingLines(List<OrderRelatedElement> rectangles)
+        public List<LineModelOld> VerticalCuttingLines(List<OrderRelatedElement> rectangles)
         {
             return CheckIfVerticalLinesIntersect(SetVerticalLinesLocation(rectangles, 500), DetermineHorizontalLinesOfRectangles(rectangles));
         }
-        public List<LineModel> HorizontalCuttingLines(List<OrderRelatedElement> rectangles)
+        public List<LineModelOld> HorizontalCuttingLines(List<OrderRelatedElement> rectangles)
         {
             return CheckIfHorizontalLinesIntersect(SetHorizontalLinesLocation(rectangles, 1500), DetermineVerticalLinesOfRectangles(rectangles));
         }
@@ -32,25 +32,25 @@ namespace RectangleSpreadController
 
 
 
-        public List<LineModel> SetLinesLocation(List<OrderRelatedElement> rectangles)
+        public List<LineModelOld> SetLinesLocation(List<OrderRelatedElement> rectangles)
         {
-            List<LineModel> allLines = SetVerticalLinesLocation(rectangles, 500);
+            List<LineModelOld> allLines = SetVerticalLinesLocation(rectangles, 500);
 
             return allLines.Concat(SetHorizontalLinesLocation(rectangles, 1500)).ToList();
         }
-        public List<LineModel> SetVerticalLinesLocation(List<OrderRelatedElement> rectangles, int sheetHeight)
+        public List<LineModelOld> SetVerticalLinesLocation(List<OrderRelatedElement> rectangles, int sheetHeight)
         {
-            List<LineModel> lines = new List<LineModel>();
+            List<LineModelOld> lines = new List<LineModelOld>();
 
             foreach (var rectangle in rectangles)
             {
                 Point startLocationFirstVerticalLine = new Point(rectangle.Location.X, 0);
                 Point endLocationFirstVerticalLine = new Point(rectangle.Location.X, sheetHeight);
-                LineModel firstVerticalLine = LineModel.CreateLine(startLocationFirstVerticalLine, endLocationFirstVerticalLine);
+                LineModelOld firstVerticalLine = LineModelOld.CreateLine(startLocationFirstVerticalLine, endLocationFirstVerticalLine);
 
                 Point startLocation = new Point(rectangle.Location.X + rectangle.Size.Width, 0);
                 Point endLocation = new Point(rectangle.Location.X + rectangle.Size.Width, sheetHeight);
-                LineModel secondVerticalLine = LineModel.CreateLine(startLocation, endLocation);
+                LineModelOld secondVerticalLine = LineModelOld.CreateLine(startLocation, endLocation);
 
                 lines.Add(firstVerticalLine);
                 lines.Add(secondVerticalLine);
@@ -58,19 +58,19 @@ namespace RectangleSpreadController
 
             return lines;
         }
-        public List<LineModel> SetHorizontalLinesLocation(List<OrderRelatedElement> rectangles, int sheetWidth)
+        public List<LineModelOld> SetHorizontalLinesLocation(List<OrderRelatedElement> rectangles, int sheetWidth)
         {
-            List<LineModel> lines = new List<LineModel>();
+            List<LineModelOld> lines = new List<LineModelOld>();
 
             foreach (var rectangle in rectangles)
             {
                 Point startLocationFirstHorizontal = new Point(0, rectangle.Location.Y);
                 Point endLocationFirstHorizontal = new Point(sheetWidth, rectangle.Location.Y);
-                LineModel firstHorizontalLine = LineModel.CreateLine(startLocationFirstHorizontal, endLocationFirstHorizontal);
+                LineModelOld firstHorizontalLine = LineModelOld.CreateLine(startLocationFirstHorizontal, endLocationFirstHorizontal);
 
                 Point startLocationSecondHorizontal = new Point(0, rectangle.Location.Y + rectangle.Size.Height);
                 Point endLocationSecondHorizontal = new Point(sheetWidth, rectangle.Location.Y + rectangle.Size.Height);
-                LineModel secondHorizontalLine = LineModel.CreateLine(startLocationSecondHorizontal, endLocationSecondHorizontal);
+                LineModelOld secondHorizontalLine = LineModelOld.CreateLine(startLocationSecondHorizontal, endLocationSecondHorizontal);
 
                 lines.Add(firstHorizontalLine);
                 lines.Add(secondHorizontalLine);
@@ -83,36 +83,36 @@ namespace RectangleSpreadController
 
 
 
-        public List<LineModel> DetermineHorizontalLinesOfRectangles(List<OrderRelatedElement> rectangles)
+        public List<LineModelOld> DetermineHorizontalLinesOfRectangles(List<OrderRelatedElement> rectangles)
         {
-            List<LineModel> lines = new List<LineModel>();
+            List<LineModelOld> lines = new List<LineModelOld>();
             foreach (var rectangle in rectangles)
             {
                 Point firstStartLocation = rectangle.Location;
                 Point firstEndLocation = new Point(rectangle.Location.X + rectangle.Size.Width, rectangle.Location.Y);
-                LineModel firstLine = LineModel.CreateLine(firstStartLocation, firstEndLocation);
+                LineModelOld firstLine = LineModelOld.CreateLine(firstStartLocation, firstEndLocation);
 
                 Point secondStartLocation = new Point(rectangle.Location.X, rectangle.Location.Y + rectangle.Size.Height);
                 Point secondEndLocation = new Point(rectangle.Location.X + rectangle.Size.Width, rectangle.Location.Y + rectangle.Size.Height);
-                LineModel secondLine = LineModel.CreateLine(secondStartLocation, secondEndLocation);
+                LineModelOld secondLine = LineModelOld.CreateLine(secondStartLocation, secondEndLocation);
 
                 lines.Add(firstLine);
                 lines.Add(secondLine);
             }
             return lines;
         }
-        public List<LineModel> DetermineVerticalLinesOfRectangles(List<OrderRelatedElement> rectangles)
+        public List<LineModelOld> DetermineVerticalLinesOfRectangles(List<OrderRelatedElement> rectangles)
         {
-            List<LineModel> lines = new List<LineModel>();
+            List<LineModelOld> lines = new List<LineModelOld>();
             foreach (var rectangle in rectangles)
             {
                 Point firstStartLocation = rectangle.Location;
                 Point firstEndLocation = new Point(rectangle.Location.X, rectangle.Location.Y + rectangle.Size.Height);
-                LineModel firstLine = LineModel.CreateLine(firstStartLocation, firstEndLocation);
+                LineModelOld firstLine = LineModelOld.CreateLine(firstStartLocation, firstEndLocation);
 
                 Point secondStartLocation = new Point(rectangle.Location.X + rectangle.Size.Width, rectangle.Location.Y);
                 Point secondEndLocation = new Point(rectangle.Location.X + rectangle.Size.Width, rectangle.Location.Y + rectangle.Size.Height);
-                LineModel secondLine = LineModel.CreateLine(secondStartLocation, secondEndLocation);
+                LineModelOld secondLine = LineModelOld.CreateLine(secondStartLocation, secondEndLocation);
 
                 lines.Add(firstLine);
                 lines.Add(secondLine);
@@ -123,9 +123,9 @@ namespace RectangleSpreadController
 
 
 
-        public List<LineModel> CheckIfVerticalLinesIntersect(List<LineModel> verticalLines, List<LineModel> horizontalRectangleLines)
+        public List<LineModelOld> CheckIfVerticalLinesIntersect(List<LineModelOld> verticalLines, List<LineModelOld> horizontalRectangleLines)
         {
-            List<LineModel> verticalCuttingLines = new List<LineModel>();
+            List<LineModelOld> verticalCuttingLines = new List<LineModelOld>();
             foreach (var line in verticalLines) //check every vertical line if collides with any rectangle
             {
                 bool isTrue = true;             //if it collides then FALSE else GREEN
@@ -145,9 +145,9 @@ namespace RectangleSpreadController
             verticalCuttingLines = verticalCuttingLines.Distinct(new CompareByStartingPoint()).ToList();
             return verticalCuttingLines;
         }
-        public List<LineModel> CheckIfHorizontalLinesIntersect(List<LineModel> horizontalLines, List<LineModel> verticalRectangleLines)
+        public List<LineModelOld> CheckIfHorizontalLinesIntersect(List<LineModelOld> horizontalLines, List<LineModelOld> verticalRectangleLines)
         {
-            List<LineModel> horizontalCuttingLines = new List<LineModel>();
+            List<LineModelOld> horizontalCuttingLines = new List<LineModelOld>();
             foreach (var line in horizontalLines) //check every horizontal line if collides with any rectangle
             {
                 bool isTrue = true;             //if it collides then FALSE else GREEN
@@ -172,7 +172,7 @@ namespace RectangleSpreadController
 
 
 
-        public List<AreaModel> CreateAreasBasedOnVerticalLines(List<LineModel> verticalCuttingLines)
+        public List<AreaModel> CreateAreasBasedOnVerticalLines(List<LineModelOld> verticalCuttingLines)
         {
             List<AreaModel> areas = new List<AreaModel>();
 
@@ -187,7 +187,7 @@ namespace RectangleSpreadController
             }
             return areas;
         }
-        public List<AreaModel> CreateAreasBasedOnHorizontal(List<LineModel> horizontalCuttingLines)
+        public List<AreaModel> CreateAreasBasedOnHorizontal(List<LineModelOld> horizontalCuttingLines)
         {
             List<AreaModel> areas = new List<AreaModel>();
             int widthOfPreviousArea = 0;

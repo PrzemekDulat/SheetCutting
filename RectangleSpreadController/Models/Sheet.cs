@@ -55,33 +55,45 @@ namespace RectangleSpreadController
             Point sheetLocation = sheet.Location;
             Size sheetSize = sheet.Size;
 
-            List<LineM> lines = new List<LineM>();
+            List<HorizontalCutLine> horizontalLines = new List<HorizontalCutLine>();
             //get horizontal lines
             foreach (var item in orderRelatedElements)
             {
-                lines.Add(LineM.CreateLine(LineType.Horizontal, item.Location.Y));
-                lines.Add(LineM.CreateLine(LineType.Horizontal, item.Location.Y + item.Size.Height));
+                HorizontalCutLine horizontalCutLine = new HorizontalCutLine(item.Location.Y);
+                horizontalLines.Add(new HorizontalCutLine(item.Location.Y));
+                horizontalLines.Add(new HorizontalCutLine(item.Location.Y + item.Size.Height));
             }
+
+            List<VerticalCutLine> varticalLines = new List<VerticalCutLine>();
             //get vertical lines
             foreach (var item in orderRelatedElements)
             {
-                lines.Add(LineM.CreateLine(LineType.Vertical, item.Location.X));
-                lines.Add(LineM.CreateLine(LineType.Vertical, item.Location.X + item.Size.Width));
+                varticalLines.Add(new VerticalCutLine(item.Location.X));
+                varticalLines.Add(new VerticalCutLine(item.Location.X + item.Size.Width));
             }
             //filter out lines that are the same as borders
-            List<LineM> linesToRemove = new List<LineM>();
+            List<VerticalCutLine> notValidVerticalLines = new List<VerticalCutLine>();
+            notValidVerticalLines.Add(new VerticalCutLine(sheetLocation.X));
+            notValidVerticalLines.Add(new VerticalCutLine(sheetLocation.X + sheetSize.Width));
 
-            List<LineM> notValidLines = new List<LineM>();
-            notValidLines.Add(LineM.CreateLine(LineType.Vertical, sheetLocation.X));
-            notValidLines.Add(LineM.CreateLine(LineType.Vertical, sheetLocation.X + sheetSize.Width));
-            notValidLines.Add(LineM.CreateLine(LineType.Horizontal, sheetLocation.Y));
-            notValidLines.Add(LineM.CreateLine(LineType.Horizontal, sheetLocation.Y + sheetSize.Height));
+            List<HorizontalCutLine> notValidHorizontalLines = new List<HorizontalCutLine>();
+            notValidHorizontalLines.Add(new HorizontalCutLine(sheetLocation.Y));
+            notValidHorizontalLines.Add(new HorizontalCutLine(sheetLocation.Y + sheetSize.Height));
 
-            List<LineM> resultList = lines.Except(notValidLines).ToList();
+
+            var hComparer = new CompareHorizontalLines();
+            var vComparer = new CompareVerticalLines();
+
+            List<HorizontalCutLine> horizontalResultList = horizontalLines.Except(notValidHorizontalLines, hComparer).ToList();
+            List<VerticalCutLine> verticalResultList = varticalLines.Except(notValidVerticalLines, vComparer).ToList();
+
+            //List<ICutLine> result = new List<ICutLine>();
+            //result = horizontalResultList;
+            //resultList = resultList.Distinct(new CompareHorizontalLines()).ToList();
 
             return resultList.ToArray();
-            //TODO create all cutlines from trectangles but filter out lines with that goes throu location or location plus size 
-
+            
+            //TODO nie wiem czy dziala distinct poprawnie
         }
 
         public ICutLine GetFirstValidCutLine(ICutLine[] cutLines)

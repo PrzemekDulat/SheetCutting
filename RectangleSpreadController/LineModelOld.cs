@@ -5,16 +5,16 @@ using System.Text;
 
 namespace RectangleSpreadController
 {
-    public class LineModel 
+    public class LineModelOld 
     {
         public Point StartLocation { get; set; }
         public Point EndLocation { get; set; }
-        private LineModel(Point startLocation, Point endLocation)
+        private LineModelOld(Point startLocation, Point endLocation)
         {
             StartLocation = startLocation;
             EndLocation = endLocation;
         }
-        public static LineModel CreateLine(Point startLocation, Point endLocation) => new LineModel(startLocation, endLocation);
+        public static LineModelOld CreateLine(Point startLocation, Point endLocation) => new LineModelOld(startLocation, endLocation);
 
 
     }
