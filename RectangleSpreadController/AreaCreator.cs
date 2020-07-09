@@ -142,7 +142,7 @@ namespace RectangleSpreadController
                 }
             }
 
-            verticalCuttingLines = verticalCuttingLines.Distinct(new CompareByStartingPoint()).ToList();
+            verticalCuttingLines = verticalCuttingLines.Distinct(/*new CompareByStartingPoint()*/).ToList();
             return verticalCuttingLines;
         }
         public List<LineModelOld> CheckIfHorizontalLinesIntersect(List<LineModelOld> horizontalLines, List<LineModelOld> verticalRectangleLines)
@@ -165,7 +165,7 @@ namespace RectangleSpreadController
                 }
             }
 
-            horizontalCuttingLines = horizontalCuttingLines.Distinct(new CompareByStartingPoint()).ToList();
+            horizontalCuttingLines = horizontalCuttingLines.Distinct(/*new CompareByStartingPoint()*/).ToList();
             return horizontalCuttingLines;
         }
 

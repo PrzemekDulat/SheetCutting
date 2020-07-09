@@ -9,19 +9,7 @@ namespace RectangleSpreadController.Tests
     [TestClass()]
     public class RectangleSorterTests
     {
-        [TestMethod()]
-        public void CreateRandomListOfRectanglesTest()
-        {
-            RectangleSorter rectangleSorter = new RectangleSorter();
-            int[] values = new int[] { 0, 1, 2, 3, 4, 5 };
-            foreach (var value in values)
-            {
-            var result = rectangleSorter.CreateRandomListOfRectangles(value);
-            Assert.IsTrue(result.Count == value);
-                
-            }
-
-        }
+      
         [TestMethod()]
         public void CreateRandomListOfRectanglesTest_negativNumber()
         {

@@ -51,49 +51,50 @@ namespace RectangleSpreadController
 
         public ICutLine[] GetCutLines(Sheet sheet)
         {
+            List<ICutLine> resultList = new List<ICutLine>();
+
             OrderRelatedElement[] orderRelatedElements = sheet.OrderRelatedElements;
             Point sheetLocation = sheet.Location;
             Size sheetSize = sheet.Size;
 
-            List<HorizontalCutLine> horizontalLines = new List<HorizontalCutLine>();
             //get horizontal lines
             foreach (var item in orderRelatedElements)
             {
-                HorizontalCutLine horizontalCutLine = new HorizontalCutLine(item.Location.Y);
-                horizontalLines.Add(new HorizontalCutLine(item.Location.Y));
-                horizontalLines.Add(new HorizontalCutLine(item.Location.Y + item.Size.Height));
+                resultList.Add(new HorizontalCutLine(item.Location.Y));
+                resultList.Add(new HorizontalCutLine(item.Location.Y + item.Size.Height));
             }
 
-            List<VerticalCutLine> varticalLines = new List<VerticalCutLine>();
             //get vertical lines
             foreach (var item in orderRelatedElements)
             {
-                varticalLines.Add(new VerticalCutLine(item.Location.X));
-                varticalLines.Add(new VerticalCutLine(item.Location.X + item.Size.Width));
+                resultList.Add(new VerticalCutLine(item.Location.X));
+                resultList.Add(new VerticalCutLine(item.Location.X + item.Size.Width));
             }
-            //filter out lines that are the same as borders
-            List<VerticalCutLine> notValidVerticalLines = new List<VerticalCutLine>();
-            notValidVerticalLines.Add(new VerticalCutLine(sheetLocation.X));
-            notValidVerticalLines.Add(new VerticalCutLine(sheetLocation.X + sheetSize.Width));
 
-            List<HorizontalCutLine> notValidHorizontalLines = new List<HorizontalCutLine>();
-            notValidHorizontalLines.Add(new HorizontalCutLine(sheetLocation.Y));
-            notValidHorizontalLines.Add(new HorizontalCutLine(sheetLocation.Y + sheetSize.Height));
+            //filter out lines that are the same as borders
+            List<ICutLine> notValidLines = new List<ICutLine>();
+            notValidLines.Add(new VerticalCutLine(sheetLocation.X));
+            notValidLines.Add(new VerticalCutLine(sheetLocation.X + sheetSize.Width));
+            notValidLines.Add(new HorizontalCutLine(sheetLocation.Y));
+            notValidLines.Add(new HorizontalCutLine(sheetLocation.Y + sheetSize.Height));
 
 
             var hComparer = new CompareHorizontalLines();
             var vComparer = new CompareVerticalLines();
 
-            List<HorizontalCutLine> horizontalResultList = horizontalLines.Except(notValidHorizontalLines, hComparer).ToList();
-            List<VerticalCutLine> verticalResultList = varticalLines.Except(notValidVerticalLines, vComparer).ToList();
-
-            //List<ICutLine> result = new List<ICutLine>();
-            //result = horizontalResultList;
+            //List<HorizontalCutLine> horizontalResultList = horizontalLines.Except(notValidHorizontalLines, hComparer).ToList();
+            //List<VerticalCutLine> verticalResultList = varticalLines.Except(notValidVerticalLines, vComparer).ToList();
+            //horizontalLines.Where(v => !notValidHorizontalLines.Contains(v));
+            //List<ICutLine> lineff = new List<ICutLine>();
             //resultList = resultList.Distinct(new CompareHorizontalLines()).ToList();
 
-            return resultList.ToArray();
-            
-            //TODO nie wiem czy dziala distinct poprawnie
+            List<ICutLine> resultList2 = RemoveLines(resultList, notValidLines);
+            return resultList2.ToArray();
+        }
+
+        public static List<ICutLine> RemoveLines(List<ICutLine> resultList, List<ICutLine> notValidLines)
+        {
+            return resultList.Where(v => !notValidLines.Any(x => x.Equals(v))).ToList();
         }
 
         public ICutLine GetFirstValidCutLine(ICutLine[] cutLines)
