@@ -1,30 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net.Http.Headers;
 using System.Text;
 
 namespace RectangleSpreadController
 {
-    public class CompareHorizontalLines : IEqualityComparer<ICutLine>
+    public class CompareHorizontalLines : IEqualityComparer<HorizontalCutLine>
     {
         public bool Equals(HorizontalCutLine x, HorizontalCutLine y)
         {
-            return x.YValue == y.YValue;
-        }
-
-        public bool Equals(ICutLine x, ICutLine y)
-        {
-            throw new NotImplementedException();
+            return x.Value == y.Value;
         }
 
         public int GetHashCode(HorizontalCutLine obj)
         {
-            return obj.YValue.GetHashCode();
+            return obj.Value.GetHashCode();
         }
 
-        public int GetHashCode(ICutLine obj)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

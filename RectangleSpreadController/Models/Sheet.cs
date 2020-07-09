@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 
@@ -14,12 +15,13 @@ namespace RectangleSpreadController
             Size = size;
             MaterialType = materialType;
         }
-
         public Point Location { get; }
-
         public MaterialType MaterialType { get; }
         public OrderRelatedElement[] OrderRelatedElements { get; set; }
         public Size Size { get; }
+
+
+
         public static ISheet Create(Sheet sheet, OrderRelatedElement[] orderRelatedElements, MaterialType materialType, Point point, Size size)
         {
             if (orderRelatedElements.Length == 0) { return new Waste(sheet, default, default); }//TODO fill data
@@ -33,6 +35,9 @@ namespace RectangleSpreadController
             return new Sheet(orderRelatedElements, new Point(0, 0), materialType, size);
 
         }
+
+
+
         public static ISheet[] CutSheet(Sheet sheet, ICutLine line)
         {
             ISheet[] sheets = new ISheet[] { default, default };
@@ -48,7 +53,6 @@ namespace RectangleSpreadController
             }
             return sheets;
         }
-
         public ICutLine[] GetCutLines(Sheet sheet)
         {
             List<ICutLine> resultList = new List<ICutLine>();
@@ -77,49 +81,124 @@ namespace RectangleSpreadController
             notValidLines.Add(new VerticalCutLine(sheetLocation.X + sheetSize.Width));
             notValidLines.Add(new HorizontalCutLine(sheetLocation.Y));
             notValidLines.Add(new HorizontalCutLine(sheetLocation.Y + sheetSize.Height));
+            
+            List<ICutLine> linesWithoutBorderLines = RemoveLines(resultList, notValidLines);
 
+            List<ICutLine> distinctLines = linesWithoutBorderLines
+            .GroupBy(m => new { m.LineType, m.Value })
+            .Select(group => group.First())
+            .ToList();
 
-            var hComparer = new CompareHorizontalLines();
-            var vComparer = new CompareVerticalLines();
-
-            //List<HorizontalCutLine> horizontalResultList = horizontalLines.Except(notValidHorizontalLines, hComparer).ToList();
-            //List<VerticalCutLine> verticalResultList = varticalLines.Except(notValidVerticalLines, vComparer).ToList();
-            //horizontalLines.Where(v => !notValidHorizontalLines.Contains(v));
-            //List<ICutLine> lineff = new List<ICutLine>();
-            //resultList = resultList.Distinct(new CompareHorizontalLines()).ToList();
-
-            List<ICutLine> resultList2 = RemoveLines(resultList, notValidLines);
-            return resultList2.ToArray();
+            return distinctLines.ToArray();
         }
-
         public static List<ICutLine> RemoveLines(List<ICutLine> resultList, List<ICutLine> notValidLines)
         {
             return resultList.Where(v => !notValidLines.Any(x => x.Equals(v))).ToList();
         }
 
-        public ICutLine GetFirstValidCutLine(ICutLine[] cutLines)
+        public ICutLine GetFirstValidCutLine(ICutLine[] cutLines, Sheet sheet)
         {
-            return cutLines.FirstOrDefault(CheckIfLineIsValidCutLine) ?? throw new ArgumentException($"In argument {nameof(cutLines)} there is no valid cutline");
+            return cutLines.FirstOrDefault(x => CheckIfLineIsValidCutLine(x, sheet)) ?? throw new ArgumentException($"In argument {nameof(cutLines)} there is no valid cutline");
         }
-
-        private static bool CheckIfLineIsValidCutLine(ICutLine cutLine)
+        private static bool CheckIfLineIsValidCutLine(ICutLine cutLine, Sheet sheet)
         {
-            //todo
-            if (cutLine.LineType == LineType.Horizontal)
+            var rectangles = sheet.OrderRelatedElements;
+            bool cutLineFailedForSomeRectangle = false;
+            foreach (var rectangle in rectangles)
             {
-                
-            }
-            throw new NotImplementedException();
-        }
+                if (cutLine.LineType == LineType.Horizontal && (cutLine.Value > rectangle.Location.Y && cutLine.Value < rectangle.Location.Y + rectangle.Size.Height))
+                {
+                    cutLineFailedForSomeRectangle = true;
+                }
+                else if (cutLine.LineType == LineType.Vertical && (cutLine.Value > rectangle.Location.X && cutLine.Value < rectangle.Location.X + rectangle.Size.Width))
+                {
+                    cutLineFailedForSomeRectangle = true;
+                }
 
+            }
+            return !cutLineFailedForSomeRectangle;
+        }
         private static ISheet[] CutHorizontal(Sheet sheet, HorizontalCutLine horizontal)
         {
-            throw new NotImplementedException();
+            Point locationForFirstSheet = sheet.Location;
+            Size sizeForFirstSheet = new Size(sheet.Size.Width, horizontal.Value);
+            ISheet[] returnSheets = new ISheet[2];
+            Sheet[] sheets = new Sheet[2];
+
+            sheets[0] = new Sheet(GetRectanglesOfNewSheet(sheet, locationForFirstSheet, sizeForFirstSheet), locationForFirstSheet,default, sizeForFirstSheet);
+
+            Point locationForSecondSheet = new Point(sheet.Location.X, horizontal.Value);
+            Size sizeForSecondSheet = new Size(sheet.Size.Width, sheet.Size.Height - horizontal.Value);
+
+            sheets[1] = new Sheet(GetRectanglesOfNewSheet(sheet, locationForSecondSheet, sizeForSecondSheet), locationForSecondSheet, default, sizeForSecondSheet);
+
+            for (int i = 0; i < sheets.Count(); i++)
+            {//check if last element size equals to size of sheet, or if 0 elements then its a waste
+                if (sheets[i].OrderRelatedElements.Count() == 1 && sheets[i].OrderRelatedElements[0].Size == sheets[i].Size)
+                {
+                    returnSheets[i] = sheets[0].OrderRelatedElements[0];
+                }
+                else if (sheets[i].OrderRelatedElements.Count() == 0)
+                {
+                    returnSheets[i] = new Waste(sheets[i], sheets[i].Location, sheets[i].Size);
+                }
+                else
+                {
+                    returnSheets[i] = sheets[i];
+                }
+            }
+            return returnSheets;
+        }
+        private static OrderRelatedElement[] GetRectanglesOfNewSheet(Sheet sheet, Point location, Size size)
+        {
+            OrderRelatedElement[] rectangles = sheet.OrderRelatedElements;
+            List<OrderRelatedElement> resultRectangles = new List<OrderRelatedElement>();
+            foreach (var rectangle in rectangles)
+            {
+                if ((rectangle.Location.X + rectangle.Size.Width) <= (location.X + size.Width)
+                                        && (rectangle.Location.X) >= (location.X)
+                                        && (rectangle.Location.Y) >= (location.Y)
+                && (rectangle.Location.Y + rectangle.Size.Height) <= (location.Y + size.Height))
+                {
+                    resultRectangles.Add(rectangle);
+                }
+            }
+
+            return resultRectangles.ToArray();
         }
         private static ISheet[] CutVertical(Sheet sheet, VerticalCutLine vertical)
         {
+            Point locationForFirstSheet = sheet.Location;
+            Size sizeForFirstSheet = new Size(vertical.Value, sheet.Size.Height);
+            ISheet[] returnSheets = new ISheet[2];
+
+            Sheet[] sheets = new Sheet[2];
+
+            sheets[0] = new Sheet(GetRectanglesOfNewSheet(sheet, locationForFirstSheet, sizeForFirstSheet), locationForFirstSheet, default, sizeForFirstSheet);
+
+            Point locationForSecondSheet = new Point(vertical.Value, sheet.Location.Y);
+            Size sizeForSecondSheet = new Size(sheet.Size.Width - vertical.Value, sheet.Size.Height);
+
+            sheets[1] = new Sheet(GetRectanglesOfNewSheet(sheet, locationForSecondSheet, sizeForSecondSheet), locationForSecondSheet, default, sizeForSecondSheet);
+            
+            for (int i = 0; i < sheets.Count(); i++)
+            {//check if last element size equals to size of sheet, or if 0 elements then its a waste
+                if (sheets[i].OrderRelatedElements.Count() == 1 && sheets[i].OrderRelatedElements[0].Size == sheets[i].Size)
+                {
+                    returnSheets[i] = sheets[0].OrderRelatedElements[0];
+                }
+                else if (sheets[i].OrderRelatedElements.Count() == 0)
+                {
+                    returnSheets[i] = new Waste(sheets[i], sheets[i].Location, sheets[i].Size);
+                }
+                else
+                {
+                    returnSheets[i] = sheets[i];
+                }
+            }
+            return returnSheets;
+
             //TODO return 2 new sheets with proper starting points and proper OrderRealtedElements
-            throw new NotImplementedException();
         }
     }
 }

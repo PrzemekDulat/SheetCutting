@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Net.Http;
 using System.Runtime.InteropServices.ComTypes;
 using System.Security.Cryptography;
 using System.Text;
@@ -40,13 +42,13 @@ namespace RectangleSpreadController
             CutSheetIntoPieces(sheet);
 
         }
+        static List<ISheet> result = new List<ISheet>();
+        static int counter = 0;
 
         private static ISheet[] CutSheetIntoPieces(Sheet sheet)
         {
-            List<ISheet> result = new List<ISheet>();
-            var cutLine = sheet.GetFirstValidCutLine(sheet.GetCutLines(sheet));
+            var cutLine = sheet.GetFirstValidCutLine(sheet.GetCutLines(sheet), sheet);
             var innerSheets = Sheet.CutSheet(sheet, cutLine);
-
             foreach (var item in innerSheets)
             {
                 switch (item)
@@ -61,7 +63,9 @@ namespace RectangleSpreadController
                         result.AddRange(CutSheetIntoPieces(innerSheet));
                         break;
                 }
+                
             }
+
             return result.ToArray();
         }
 

@@ -8,12 +8,12 @@ namespace RectangleSpreadController
     {
         public bool Equals(VerticalCutLine x, VerticalCutLine y)
         {
-            return x.XValue == y.XValue;
+            return x.Value == y.Value;
         }
 
         public int GetHashCode(VerticalCutLine obj)
         {
-            return obj.XValue.GetHashCode();
+            return obj.Value.GetHashCode();
         }
     }
 }

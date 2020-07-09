@@ -4,5 +4,7 @@
     {
         LineType LineType { get; }
 
+        int Value { get; }
+
     }
 }

@@ -4,18 +4,27 @@ namespace RectangleSpreadController
 {
     public class VerticalCutLine : ICutLine, IEquatable<VerticalCutLine>
     {
-        public double XValue { get; }
+        public int Value { get; }
 
         public LineType LineType => LineType.Vertical;
 
-        public VerticalCutLine(double xValue)
+        public VerticalCutLine(int Value)
         {
-            XValue = xValue;
+            this.Value = Value;
         }
 
         public bool Equals(VerticalCutLine other)
         {
-            return XValue.Equals(other.XValue);
+            return Value.Equals(other.Value);
+        }
+        public override bool Equals(object obj)
+        {
+            switch (obj)
+            {
+                case VerticalCutLine v:
+                    return Equals(v);
+            }
+            return base.Equals(obj);
         }
     }
 }
