@@ -20,7 +20,7 @@ namespace RectangleSpreadController
         //    List<OrderRelatedElement> rectanglesPositioned = SetupRectanglesLocation(rectanglesDesc, 1500, 500);
         //    return rectanglesPositioned;
         //}
-        
+
 
         public OrderRelatedElement[] SampleDataSet()
         {
@@ -39,15 +39,19 @@ namespace RectangleSpreadController
 
             Sheet sheet = Sheet.CreateNewSheet(orderRelatedElements, default, new Size(1000, 1500));
 
-            CutSheetIntoPieces(sheet);
+           var result = CutSheetIntoPieces(sheet);
 
         }
-        static List<ISheet> result = new List<ISheet>();
-        static int counter = 0;
+        static List<ICutLine> cutListResult = new List<ICutLine>();
 
         private static ISheet[] CutSheetIntoPieces(Sheet sheet)
         {
+            List<ISheet> result = new List<ISheet>();
+
             var cutLine = sheet.GetFirstValidCutLine(sheet.GetCutLines(sheet), sheet);
+
+            cutListResult.Add(cutLine);
+
             var innerSheets = Sheet.CutSheet(sheet, cutLine);
             foreach (var item in innerSheets)
             {
@@ -63,7 +67,7 @@ namespace RectangleSpreadController
                         result.AddRange(CutSheetIntoPieces(innerSheet));
                         break;
                 }
-                
+
             }
 
             return result.ToArray();
@@ -124,7 +128,7 @@ namespace RectangleSpreadController
         //public List<OrderRelatedElement> CreateRandomListOfRectangles(int numberOfRectangles)
         //{
         //    if (numberOfRectangles < 0) { throw new ArgumentException(nameof(numberOfRectangles)); }
-       
+
         //    List<OrderRelatedElement> rectangles = new List<OrderRelatedElement>();
 
         //    for (int i = 0; i < numberOfRectangles; i++)
@@ -136,7 +140,7 @@ namespace RectangleSpreadController
         //    }
         //    return rectangles;
         //}
-        
+
         //private static readonly Random getrandom = new Random();
         //public static int GetRandomNumber(int min, int max)
         //{
