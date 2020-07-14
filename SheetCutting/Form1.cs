@@ -16,6 +16,7 @@ namespace SheetCutting
         public Form1()
         {
             InitializeComponent();
+            this.pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
         }
 
         private void startAssemble_click(object sender, EventArgs e)
@@ -24,11 +25,24 @@ namespace SheetCutting
             //czesc
 
             viewModel.StartCuttingSheet();
+            pictureBox1.Image = viewModel.GoThroughAllSteps(0);
         }
 
         private void generateJson_Click(object sender, EventArgs e)
         {
             //adapter.GenerateJson(adapter.GenerateRandomRectanglesAndPositionThem());
+        }
+        int counter = 0;
+        private void prevStep_Click(object sender, EventArgs e)
+        {
+            counter--;
+            pictureBox1.Image = viewModel.GoThroughAllSteps(counter);
+        }
+
+        private void nextStep_Click(object sender, EventArgs e)
+        {
+            counter++;
+            pictureBox1.Image = viewModel.GoThroughAllSteps(counter);
         }
     }
 }

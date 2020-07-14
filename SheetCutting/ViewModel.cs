@@ -13,10 +13,10 @@ namespace SheetCutting
 {
     public class ViewModel
     {
+        RectangleSorter rectangleSorter = new RectangleSorter();
 
         public void StartCuttingSheet()
         {
-            RectangleSorter rectangleSorter = new RectangleSorter();
 
             var result = rectangleSorter.CutExample(rectangleSorter.SampleDataSet());
             var howToCut = rectangleSorter.GetCutLineAndSheets();
@@ -24,92 +24,107 @@ namespace SheetCutting
             DrawSheetOnScreen(howToCut);
         }
 
+        List<Image> images = new List<Image>();
+
         public List<Image> DrawSheetOnScreen(List<CutLineAndSheet> cutLinesAndSheets)
         {
-            List<Image> images = new List<Image>();
-
             foreach (var item in cutLinesAndSheets)
             {
                 //TODO
+                Image precutImage = new Bitmap(1000, 1500);
+
+                using (Graphics formGraphics = Graphics.FromImage(precutImage))
+                {
+                    DrawSheet(item.Sheet.Location, item.Sheet.Size, formGraphics);
+                    
+                    foreach (var rectangle in item.Sheet.OrderRelatedElements)
+                    {
+                        DrawRectangle(rectangle ,formGraphics);
+                    }
+
+                    DrawLines(item, formGraphics, Color.Red, 4);
+                }
+                images.Add(precutImage);
+
             }
 
             return images;
         }
-        //public Image StartAssemblingRectangles()
-        //{
-        //    var rectangleSorter = new RectangleSorter();
-        //    var areaCreator = new AreaCreator();
-        //    Image image = new Bitmap(1500, 500);
-        //    using (Graphics formGraphics = Graphics.FromImage(image))
-        //    {
-        //        var sortedRectangles = rectangleSorter.GenerateRandomRectanglesAndPositionThem();
-        //        var sortedLines = areaCreator.AssembledLines(sortedRectangles);
-        //        var rectangleHorizontalLines = areaCreator.HorizontalRectangleLines(sortedRectangles);
-        //        var rectangleVerticalLines = areaCreator.VerticalRectangleLines(sortedRectangles);
 
-        //        var verticalCuttingLines = areaCreator.VerticalCuttingLines(sortedRectangles);
-        //        var horizontalCuttingLines = areaCreator.HorizontalCuttingLines(sortedRectangles);
-        //        foreach (var rectangle in sortedRectangles)
-        //        {
-        //            DrawRectangle(rectangle.Location, rectangle.Size, formGraphics);
-        //        }
+        public Image GoThroughAllSteps(int step)
+        {
+            if (step >= images.Count)
+            {
+                
+                MessageBox.Show("Przekroczyles limit.");
+            }
+            else if (step < 0)
+            {
+                
+                MessageBox.Show("Przekroczyles limit.");
+            }
+            else
+            {
+                return images[step];
+            }
 
-        //        //foreach (var line in sortedLines)
-        //        //{
-        //        //    DrawLines(line, formGraphics, Color.Red, 1);
-        //        //}
+            return null;
+        }
+       
+        public static void DrawRectangle(OrderRelatedElement rectangle, Graphics formGraphics)
+        {
+            Font myFont = new Font("Arial", 22);
 
-        //        //foreach (var line in rectangleHorizontalLines)
-        //        //{
-        //        //    DrawLines(line, formGraphics, Color.Yellow, 3);
-        //        //}
+            SolidBrush myBrush = new SolidBrush(Color.FromArgb(53,175,255));
+            Rectangle rect = new Rectangle(rectangle.Location, rectangle.Size);
 
-        //        //foreach (var line in rectangleVerticalLines)
-        //        //{
-        //        //    DrawLines(line, formGraphics, Color.Yellow, 3);
-        //        //}
-        //        //foreach (var line in verticalCuttingLines)
-        //        //{
-        //        //    DrawLines(line, formGraphics, Color.Black, 10);
-        //        //}
-        //        foreach (var line in horizontalCuttingLines)
-        //        {
-        //            DrawLines(line, formGraphics, Color.Red, 2);
-        //        }
+            formGraphics.DrawRectangle(new Pen(Color.Black, 0), rect);
+            formGraphics.FillRectangle(myBrush, rect);
+            formGraphics.DrawString(rectangle.OrderLine, myFont, Brushes.Black, rectangle.Location);
+
+            myBrush.Dispose();
+        }
+
+        public static void DrawLines(CutLineAndSheet cutLineAndSheet, Graphics formGraphics, Color color, int width)
+        {
+            ICutLine line = cutLineAndSheet.Line;
+            var sheetLocation = cutLineAndSheet.Sheet.Location;
 
 
-        //        var areas = areaCreator.CreateAreasBasedOnVerticalLines(verticalCuttingLines);
-        //        var areasWithRectangles = areaCreator.DetermineRectangleInArea(areas, sortedRectangles);
-        //        areaCreator.CutAreasHorizontaly(areasWithRectangles);
-        //    }
 
-        //    return image;
-        //}
+            if (line.LineType == LineType.Horizontal)
+            {
+                Point firstPoint = new Point(0 + sheetLocation.X, line.Value + sheetLocation.Y);
+                Point secondPoint = new Point(2000 + sheetLocation.X, line.Value + sheetLocation.Y);
 
-        //internal List<OrderRelatedElement> GenerateRandomRectanglesAndPositionThem()
-        //{
-        //    var rectangleSorter = new RectangleSorter();
-        //    return  rectangleSorter.GenerateRandomRectanglesAndPositionThem();
-        //}
+                formGraphics.DrawLine(new Pen(color, width), firstPoint, secondPoint);
+            }
+            else if (line.LineType == LineType.Vertical)
+            {
+                Point firstPoint = new Point(line.Value + sheetLocation.X, 0 + sheetLocation.Y);
+                Point secondPoint = new Point(line.Value + sheetLocation.X, 2000 + sheetLocation.Y);
 
-        //int i = 0;
-        //public static void DrawRectangle(Point location, Size size, Graphics formGraphics)
-        //{
-        //    SolidBrush myBrush = new SolidBrush(Color.FromArgb(GetRandomNumber(1, 255), GetRandomNumber(1, 255), GetRandomNumber(1, 255)));
-        //    Rectangle rect = new Rectangle(location, size);
-        //    formGraphics.DrawRectangle(new Pen(Color.Black, 0), rect);
-        //    formGraphics.FillRectangle(myBrush, rect);
-        //    myBrush.Dispose();
-        //}
+                formGraphics.DrawLine(new Pen(color, width), firstPoint, secondPoint);
+            }
+        }
 
-        //public static void DrawLines(LineModelOld line, Graphics formGraphics, Color color, int width)
-        //{
-        //    //SolidBrush myBrush = new SolidBrush(Color.FromArgb(GetRandomNumber(1, 255), GetRandomNumber(1, 255), GetRandomNumber(1, 255)));
-        //    //Rectangle rect = new Rectangle(location, size);
-        //    formGraphics.DrawLine(new Pen(color, width), line.StartLocation, line.EndLocation);
-        //    //formGraphics.FillRectangle(myBrush, rect);
-        //    //myBrush.Dispose();
-        //}
+        public static void DrawSheet(Point location, Size size, Graphics formGraphics)
+        {
+            SolidBrush myBrush = new SolidBrush(Color.FromArgb(230,230,230));
+            Rectangle rect = new Rectangle(location, size);
+            formGraphics.DrawRectangle(new Pen(Color.Black, 0), rect);
+            formGraphics.FillRectangle(myBrush, rect);
+            myBrush.Dispose();
+        }
+
+        public static void DrawWaste(Point location, Size size, Graphics formGraphics)
+        {
+            SolidBrush myBrush = new SolidBrush(Color.FromArgb(164,164,164));
+            Rectangle rect = new Rectangle(location, size);
+            formGraphics.DrawRectangle(new Pen(Color.Black, 0), rect);
+            formGraphics.FillRectangle(myBrush, rect);
+            myBrush.Dispose();
+        }
 
         //public void GenerateJson(List<OrderRelatedElement> rectangles)
         //{
@@ -127,14 +142,14 @@ namespace SheetCutting
         //    }
         //}
 
-        //private static readonly Random getrandom = new Random();
-        //public static int GetRandomNumber(int min, int max)
-        //{
-        //    lock (getrandom)
-        //    {
-        //        return getrandom.Next(min, max);
-        //    }
-        //}
+        private static readonly Random getrandom = new Random();
+        public static int GetRandomNumber(int min, int max)
+        {
+            lock (getrandom)
+            {
+                return getrandom.Next(min, max);
+            }
+        }
 
         //public static string RandomString(int length)
         //{

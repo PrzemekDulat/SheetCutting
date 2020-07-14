@@ -33,7 +33,7 @@ namespace RectangleSpreadController
             orderRelatedElements[1] = new OrderRelatedElement(new Point(0, 300), new Size(200, 300), "No.2");
             orderRelatedElements[2] = new OrderRelatedElement(new Point(600, 500), new Size(200, 300), "No.3");
             orderRelatedElements[3] = new OrderRelatedElement(new Point(800, 1200), new Size(200, 300), "No.4"); 
-            orderRelatedElements[4] = new OrderRelatedElement(new Point(0, 1200), new Size(200, 300), "No.5");
+            orderRelatedElements[4] = new OrderRelatedElement(new Point(123, 1240), new Size(300, 200), "No.5");
 
             return orderRelatedElements;
         }
