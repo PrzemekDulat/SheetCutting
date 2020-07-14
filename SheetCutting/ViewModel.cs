@@ -7,16 +7,33 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using RectangleSpreadController;
+using RectangleSpreadController.Models;
 
 namespace SheetCutting
 {
     public class ViewModel
     {
-        public void testButton()
+
+        public void StartCuttingSheet()
         {
             RectangleSorter rectangleSorter = new RectangleSorter();
-            
-            rectangleSorter.CutExample(rectangleSorter.SampleDataSet());
+
+            var result = rectangleSorter.CutExample(rectangleSorter.SampleDataSet());
+            var howToCut = rectangleSorter.GetCutLineAndSheets();
+
+            DrawSheetOnScreen(howToCut);
+        }
+
+        public List<Image> DrawSheetOnScreen(List<CutLineAndSheet> cutLinesAndSheets)
+        {
+            List<Image> images = new List<Image>();
+
+            foreach (var item in cutLinesAndSheets)
+            {
+                //TODO
+            }
+
+            return images;
         }
         //public Image StartAssemblingRectangles()
         //{
@@ -59,7 +76,7 @@ namespace SheetCutting
         //        {
         //            DrawLines(line, formGraphics, Color.Red, 2);
         //        }
-                
+
 
         //        var areas = areaCreator.CreateAreasBasedOnVerticalLines(verticalCuttingLines);
         //        var areasWithRectangles = areaCreator.DetermineRectangleInArea(areas, sortedRectangles);

@@ -12,7 +12,7 @@ namespace SheetCutting
 {
     public partial class Form1 : Form
     {
-        ViewModel adapter = new ViewModel();
+        ViewModel viewModel = new ViewModel();
         public Form1()
         {
             InitializeComponent();
@@ -22,16 +22,13 @@ namespace SheetCutting
         {
             //pictureBox1.Image = adapter.StartAssemblingRectangles();
             //czesc
+
+            viewModel.StartCuttingSheet();
         }
 
         private void generateJson_Click(object sender, EventArgs e)
         {
             //adapter.GenerateJson(adapter.GenerateRandomRectanglesAndPositionThem());
-        }
-
-        private void testButton_Click(object sender, EventArgs e)
-        {
-            adapter.testButton();
         }
     }
 }
