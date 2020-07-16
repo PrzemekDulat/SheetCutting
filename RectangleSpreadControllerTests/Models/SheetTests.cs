@@ -61,5 +61,24 @@ namespace RectangleSpreadController.Tests
 
             Assert.IsTrue(validLines.Count == 5);
         }
+
+        [TestMethod()]
+        public void DetermineBestCutLineTest()
+        {
+            OrderRelatedElement[] rectangles = new OrderRelatedElement[5];
+            rectangles[0] = new OrderRelatedElement(new Point(0, 0), new Size(200, 300), "No.1234567-123");
+            rectangles[1] = new OrderRelatedElement(new Point(200, 0), new Size(200, 300), "No.1234567-123");
+            rectangles[2] = new OrderRelatedElement(new Point(400, 0), new Size(200, 300), "No.1234567-123");
+            rectangles[3] = new OrderRelatedElement(new Point(600, 0), new Size(200, 300), "No.1234567-123");
+            rectangles[4] = new OrderRelatedElement(new Point(800, 0), new Size(200, 300), "No.1234567-123");
+
+            List<ICutLine> validLines = new List<ICutLine>();
+            validLines.Add(new VerticalCutLine(200));
+            validLines.Add(new VerticalCutLine(400));
+            validLines.Add(new VerticalCutLine(600));
+            ICutLine result = Sheet.DetermineBestCutLine(rectangles, validLines);
+
+            Assert.IsTrue(result == validLines[0]);
+        }
     }
 }

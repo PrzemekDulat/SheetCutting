@@ -7,9 +7,9 @@ namespace RectangleSpreadController
 {
     public class OrderRelatedElement : ISheet
     {
-        public Point Location { get; }
+        public Point Location { get; set; }
 
-        public Size Size { get; }
+        public Size Size { get; set; }
 
         public string OrderLine { get; }
 

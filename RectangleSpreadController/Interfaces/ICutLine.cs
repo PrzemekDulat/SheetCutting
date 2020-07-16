@@ -6,5 +6,8 @@
 
         int Value { get; }
 
+        bool IsPartOfRectangle(OrderRelatedElement rectangle, Sheet sheet);
+        int CountRectanglesWhereLineIsPartOf(OrderRelatedElement[] rectangle, Sheet sheet);
+        int Lenght(OrderRelatedElement[] rectangle, Sheet sheet);
     }
 }

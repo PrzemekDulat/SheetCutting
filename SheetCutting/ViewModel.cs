@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using RectangleSpreadController;
+using RectangleSpreadController.Algorithms;
 using RectangleSpreadController.Models;
 
 namespace SheetCutting
@@ -15,10 +16,9 @@ namespace SheetCutting
     {
         RectangleSorter rectangleSorter = new RectangleSorter();
 
-        public void StartCuttingSheet()
+        public void StartCuttingSheet(bool rotatable)
         {
-
-            var result = rectangleSorter.CutExample(rectangleSorter.SampleDataSet());
+            var result = rectangleSorter.CutExample(rectangleSorter.SampleDataSet(rotatable));
             var howToCut = rectangleSorter.GetCutLineAndSheets();
 
             DrawSheetOnScreen(howToCut);
@@ -26,16 +26,20 @@ namespace SheetCutting
 
         List<Image> images = new List<Image>();
 
+        public void DoStuff()
+        {
+            BestFitAlgorithm bestFitAlgorithm = new BestFitAlgorithm();
+            bestFitAlgorithm.test();
+        }
         public List<Image> DrawSheetOnScreen(List<CutLineAndSheet> cutLinesAndSheets)
         {
             foreach (var item in cutLinesAndSheets)
             {
-                //TODO
                 Image precutImage = new Bitmap(1000, 1500);
 
                 using (Graphics formGraphics = Graphics.FromImage(precutImage))
                 {
-                    DrawSheet(item.Sheet.Location, item.Sheet.Size, formGraphics);
+                    DrawSheet(item.Sheet, formGraphics);
                     
                     foreach (var rectangle in item.Sheet.OrderRelatedElements)
                     {
@@ -51,21 +55,22 @@ namespace SheetCutting
             return images;
         }
 
-        public Image GoThroughAllSteps(int step)
+        public static int counter = 0;
+        public Image GoThroughAllSteps()
         {
-            if (step >= images.Count)
+            if (counter >= images.Count)
             {
-                
-                MessageBox.Show("Przekroczyles limit.");
+                counter--;
+                MessageBox.Show("Koniec.");
             }
-            else if (step < 0)
+            else if (counter < 0)
             {
-                
+                counter++;
                 MessageBox.Show("Przekroczyles limit.");
             }
             else
             {
-                return images[step];
+                return images[counter];
             }
 
             return null;
@@ -78,7 +83,7 @@ namespace SheetCutting
             SolidBrush myBrush = new SolidBrush(Color.FromArgb(53,175,255));
             Rectangle rect = new Rectangle(rectangle.Location, rectangle.Size);
 
-            formGraphics.DrawRectangle(new Pen(Color.Black, 0), rect);
+            formGraphics.DrawRectangle(new Pen(Color.Black, 2), rect);
             formGraphics.FillRectangle(myBrush, rect);
             formGraphics.DrawString(rectangle.OrderLine, myFont, Brushes.Black, rectangle.Location);
 
@@ -89,8 +94,6 @@ namespace SheetCutting
         {
             ICutLine line = cutLineAndSheet.Line;
             var sheetLocation = cutLineAndSheet.Sheet.Location;
-
-
 
             if (line.LineType == LineType.Horizontal)
             {
@@ -108,22 +111,27 @@ namespace SheetCutting
             }
         }
 
-        public static void DrawSheet(Point location, Size size, Graphics formGraphics)
+        public static void DrawSheet(Sheet sheet, Graphics formGraphics)
         {
-            SolidBrush myBrush = new SolidBrush(Color.FromArgb(230,230,230));
-            Rectangle rect = new Rectangle(location, size);
+            SolidBrush myBrush = new SolidBrush(Color.FromArgb(200,200,200));
+            Rectangle rect = new Rectangle(sheet.Location, sheet.Size);
             formGraphics.DrawRectangle(new Pen(Color.Black, 0), rect);
             formGraphics.FillRectangle(myBrush, rect);
             myBrush.Dispose();
         }
 
-        public static void DrawWaste(Point location, Size size, Graphics formGraphics)
+        public void GenerateTextInstruction()
         {
-            SolidBrush myBrush = new SolidBrush(Color.FromArgb(164,164,164));
-            Rectangle rect = new Rectangle(location, size);
-            formGraphics.DrawRectangle(new Pen(Color.Black, 0), rect);
-            formGraphics.FillRectangle(myBrush, rect);
-            myBrush.Dispose();
+            rectangleSorter.PrintoutInstructionsHowToCut();
+        }
+
+        private static readonly Random getrandom = new Random();
+        public static int GetRandomNumber(int min, int max)
+        {
+            lock (getrandom)
+            {
+                return getrandom.Next(min, max);
+            }
         }
 
         //public void GenerateJson(List<OrderRelatedElement> rectangles)
@@ -140,22 +148,6 @@ namespace SheetCutting
         //            }
         //        }
         //    }
-        //}
-
-        private static readonly Random getrandom = new Random();
-        public static int GetRandomNumber(int min, int max)
-        {
-            lock (getrandom)
-            {
-                return getrandom.Next(min, max);
-            }
-        }
-
-        //public static string RandomString(int length)
-        //{
-        //    const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        //    return new string(Enumerable.Repeat(chars, length)
-        //      .Select(s => s[getrandom.Next(s.Length)]).ToArray());
         //}
 
     }

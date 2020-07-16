@@ -23,26 +23,31 @@ namespace SheetCutting
         {
             //pictureBox1.Image = adapter.StartAssemblingRectangles();
             //czesc
-
-            viewModel.StartCuttingSheet();
-            pictureBox1.Image = viewModel.GoThroughAllSteps(0);
+            viewModel.DoStuff();
+            viewModel.StartCuttingSheet(rotatableCheckBox.Checked);
+            SetLabelTextAndPictureboxImage();
         }
 
         private void generateJson_Click(object sender, EventArgs e)
         {
-            //adapter.GenerateJson(adapter.GenerateRandomRectanglesAndPositionThem());
+            viewModel.GenerateTextInstruction();
         }
-        int counter = 0;
         private void prevStep_Click(object sender, EventArgs e)
         {
-            counter--;
-            pictureBox1.Image = viewModel.GoThroughAllSteps(counter);
+            ViewModel.counter--;
+            SetLabelTextAndPictureboxImage();
         }
 
         private void nextStep_Click(object sender, EventArgs e)
         {
-            counter++;
-            pictureBox1.Image = viewModel.GoThroughAllSteps(counter);
+            ViewModel.counter++;
+            SetLabelTextAndPictureboxImage();
+        }
+
+        private void SetLabelTextAndPictureboxImage()
+        {
+            label.Text = "Current step: " + ViewModel.counter;
+            pictureBox1.Image = viewModel.GoThroughAllSteps();
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace RectangleSpreadController
 {
@@ -65,7 +66,6 @@ namespace RectangleSpreadController
             foreach (var item in orderRelatedElements)
             {
                 resultList.Add(new HorizontalCutLine(item.Location.Y - sheet.Location.Y));
-                //resultList.Add(new HorizontalCutLine(item.Location.Y + item.Size.Height));
                 resultList.Add(new HorizontalCutLine(item.Size.Height + (item.Location.Y - sheet.Location.Y)));
             }
 
@@ -73,19 +73,14 @@ namespace RectangleSpreadController
             foreach (var item in orderRelatedElements)
             {
                 resultList.Add(new VerticalCutLine(item.Location.X - sheet.Location.X));
-                //resultList.Add(new VerticalCutLine(item.Location.X + item.Size.Width));
                 resultList.Add(new VerticalCutLine(item.Size.Width + (item.Location.X - sheet.Location.X)));
             }
 
             //filter out lines that are the same as borders
             List<ICutLine> notValidLines = new List<ICutLine>();
             notValidLines.Add(new VerticalCutLine(0));
-            //notValidLines.Add(new VerticalCutLine(sheetLocation.X));
-            //notValidLines.Add(new VerticalCutLine(sheetLocation.X + sheetSize.Width));
             notValidLines.Add(new VerticalCutLine(sheetSize.Width));
             notValidLines.Add(new HorizontalCutLine(0));
-            //notValidLines.Add(new HorizontalCutLine(sheetLocation.Y));
-            //notValidLines.Add(new HorizontalCutLine(sheetLocation.Y + sheetSize.Height));
             notValidLines.Add(new HorizontalCutLine(sheetSize.Height));
 
 
@@ -105,26 +100,64 @@ namespace RectangleSpreadController
 
         public ICutLine GetFirstValidCutLine(ICutLine[] cutLines, Sheet sheet)
         {
-            return cutLines.FirstOrDefault(x => CheckIfLineIsValidCutLine(x, sheet)) ?? throw new ArgumentException($"In argument {nameof(cutLines)} there is no valid cutline");
+            //return cutLines.FirstOrDefault(x => CheckIfLineIsValidCutLine(x, sheet)) ?? throw new ArgumentException($"In argument {nameof(cutLines)} there is no valid cutline");
+            return DetermineBestCutLine(sheet.OrderRelatedElements, CheckIfLineIsValidCutLine(cutLines, sheet), sheet) ?? throw new ArgumentException($"In argument {nameof(cutLines)} there is no valid cutline");
         }
-        private static bool CheckIfLineIsValidCutLine(ICutLine cutLine, Sheet sheet)
+
+        private static List<ICutLine> CheckIfLineIsValidCutLine(ICutLine[] cutLines, Sheet sheet)
         {
+            List<ICutLine> validLines = new List<ICutLine>();
+
             var rectangles = sheet.OrderRelatedElements;
             bool cutLineFailedForSomeRectangle = false;
-            foreach (var rectangle in rectangles)
+            foreach (var cutLine in cutLines)
             {
-                if (cutLine.LineType == LineType.Horizontal && (cutLine.Value > (rectangle.Location.Y-sheet.Location.Y) && cutLine.Value < (rectangle.Location.Y - sheet.Location.Y) + rectangle.Size.Height))
+                cutLineFailedForSomeRectangle = false;
+                foreach (var rectangle in rectangles)
                 {
-                    cutLineFailedForSomeRectangle = true;
-                }
-                else if (cutLine.LineType == LineType.Vertical && (cutLine.Value > (rectangle.Location.X - sheet.Location.X) && cutLine.Value < (rectangle.Location.X - sheet.Location.X) + rectangle.Size.Width))
-                {
-                    cutLineFailedForSomeRectangle = true;
+                    if (cutLine.LineType == LineType.Horizontal
+                        && (cutLine.Value > (rectangle.Location.Y - sheet.Location.Y)
+                        && cutLine.Value < (rectangle.Location.Y - sheet.Location.Y) + rectangle.Size.Height))
+                    {
+                        cutLineFailedForSomeRectangle = true;
+                    }
+                    else if (cutLine.LineType == LineType.Vertical
+                        && (cutLine.Value > (rectangle.Location.X - sheet.Location.X)
+                        && cutLine.Value < (rectangle.Location.X - sheet.Location.X) + rectangle.Size.Width))
+                    {
+                        cutLineFailedForSomeRectangle = true;
+                    }
                 }
 
+                if (!cutLineFailedForSomeRectangle)
+                {
+                    validLines.Add(cutLine);
+                }
             }
-            return !cutLineFailedForSomeRectangle;
+            //List<int> lengths = new List<int>();
+
+            //foreach (var item in validLines)
+            //{
+            //    lengths.Add(item.Lenght(sheet.OrderRelatedElements, sheet));
+            //}
+            //TODO
+            return validLines.Where(x => x.Lenght(sheet.OrderRelatedElements, sheet) <= 1000).ToList(); ;
         }
+
+       
+
+        public static ICutLine DetermineBestCutLine(OrderRelatedElement[] rectangles, List<ICutLine> validLines, Sheet sheet)
+        {
+            var test2 = validLines.Select(x => (x, x.CountRectanglesWhereLineIsPartOf(rectangles, sheet))).ToList();
+            var test = validLines.OrderByDescending(x => x.CountRectanglesWhereLineIsPartOf(rectangles, sheet)).First();
+            return test;
+        }
+    
+        public static IOrderedEnumerable<KeyValuePair<ICutLine, int>> OrderByDescending(Dictionary<ICutLine, int> linesToNumberOfRectanglesMap)
+        {
+            return linesToNumberOfRectanglesMap.OrderByDescending(x => x.Value);
+        }
+
         private static ISheet[] CutHorizontal(Sheet sheet, HorizontalCutLine horizontal)
         {
             Point locationForFirstSheet = sheet.Location;
@@ -132,7 +165,7 @@ namespace RectangleSpreadController
             ISheet[] returnSheets = new ISheet[2];
             Sheet[] sheets = new Sheet[2];
 
-            sheets[0] = new Sheet(GetRectanglesOfNewSheet(sheet, locationForFirstSheet, sizeForFirstSheet), locationForFirstSheet,default, sizeForFirstSheet);
+            sheets[0] = new Sheet(GetRectanglesOfNewSheet(sheet, locationForFirstSheet, sizeForFirstSheet), locationForFirstSheet, default, sizeForFirstSheet);
 
             Point locationForSecondSheet = new Point(sheet.Location.X, horizontal.Value + sheets[0].Location.Y);
             Size sizeForSecondSheet = new Size(sheet.Size.Width, sheet.Size.Height - horizontal.Value);
@@ -185,10 +218,9 @@ namespace RectangleSpreadController
 
             Point locationForSecondSheet = new Point(vertical.Value + sheets[0].Location.X, sheet.Location.Y);
             Size sizeForSecondSheet = new Size(sheet.Size.Width - vertical.Value, sheet.Size.Height);
-            //horizontal.Value + sheets[0].Location.Y
 
             sheets[1] = new Sheet(GetRectanglesOfNewSheet(sheet, locationForSecondSheet, sizeForSecondSheet), locationForSecondSheet, default, sizeForSecondSheet);
-            
+
             for (int i = 0; i < sheets.Count(); i++)
             {//check if last element size equals to size of sheet, or if 0 elements then its a waste
                 if (sheets[i].OrderRelatedElements.Count() == 1 && sheets[i].OrderRelatedElements[0].Size == sheets[i].Size)
@@ -205,8 +237,6 @@ namespace RectangleSpreadController
                 }
             }
             return returnSheets;
-
-            //TODO return 2 new sheets with proper starting points and proper OrderRealtedElements
         }
     }
 }

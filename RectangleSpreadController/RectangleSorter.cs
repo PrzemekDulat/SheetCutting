@@ -1,4 +1,6 @@
-﻿using RectangleSpreadController.Models;
+﻿using RectangleSpreadController.Algorithms;
+using RectangleSpreadController.Interfaces;
+using RectangleSpreadController.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -16,35 +18,44 @@ namespace RectangleSpreadController
 {
     public class RectangleSorter
     {
-        //public List<OrderRelatedElement> GenerateRandomRectanglesAndPositionThem()
-        //{
-        //    List<OrderRelatedElement> rectangles = CreateRandomListOfRectangles(8);
-        //    List<OrderRelatedElement> rectanglesDesc = SortRectanglesDecreasing(rectangles);
-        //    List<OrderRelatedElement> rectanglesPositioned = SetupRectanglesLocation(rectanglesDesc, 1500, 500);
-        //    return rectanglesPositioned;
-        //}
-
-
-        public OrderRelatedElement[] SampleDataSet()
+        public List<List<OrderRelatedElement>> SampleDataSet(bool rotatable)
         {
-            OrderRelatedElement[] orderRelatedElements = new OrderRelatedElement[5];
+            OrderRelatedElement[] orderRelatedElements = new OrderRelatedElement[6];
 
-            orderRelatedElements[0] = new OrderRelatedElement(new Point(0, 0), new Size(200, 300), "No.1");
-            orderRelatedElements[1] = new OrderRelatedElement(new Point(0, 300), new Size(200, 300), "No.2");
-            orderRelatedElements[2] = new OrderRelatedElement(new Point(600, 500), new Size(200, 300), "No.3");
-            orderRelatedElements[3] = new OrderRelatedElement(new Point(800, 1200), new Size(200, 300), "No.4"); 
-            orderRelatedElements[4] = new OrderRelatedElement(new Point(123, 1240), new Size(300, 200), "No.5");
+            //orderRelatedElements[0] = new OrderRelatedElement(new Point(0, 0), new Size(200, 300), "No.1234567-123");
+            //orderRelatedElements[1] = new OrderRelatedElement(new Point(0, 300), new Size(200, 300), "No.2234567-123");
+            //orderRelatedElements[2] = new OrderRelatedElement(new Point(600, 500), new Size(200, 300), "No.3234567-123");
+            //orderRelatedElements[3] = new OrderRelatedElement(new Point(800, 1200), new Size(200, 300), "No.4234567-123");
+            //orderRelatedElements[4] = new OrderRelatedElement(new Point(123, 1240), new Size(300, 200), "No.5234567-123");
+            //orderRelatedElements[5] = new OrderRelatedElement(new Point(0, 600), new Size(200, 300), "No.6234567-123");
 
-            return orderRelatedElements;
+            return SortedRectanglesByAlgorithm(new FirstFitDecreasingAlgorithm());
         }
-
-        public ISheet[] CutExample(OrderRelatedElement[] orderRelatedElements)
+        public List<List<OrderRelatedElement>> SortedRectanglesByAlgorithm(IAlgorithm algorithm)
         {
-            Sheet sheet = Sheet.CreateNewSheet(orderRelatedElements, default, new Size(1000, 1500));
+            AlgorithmConstrains algorithmConstrains = AlgorithmConstrains.Create(true, 1500);
 
-            //PrintoutInstructionsHowToCut();
+            Size sheetSize = new Size(1000,1500);
+            
+            Sheet sheet = Sheet.CreateNewSheet(SortRectanglesDecreasing(CreateRandomListOfRectangles(25), algorithmConstrains.IsAbleToRotate).ToArray(), default, sheetSize);
+            
+            return algorithm.ExecuteAlgorithm(sheet, algorithmConstrains);
+        }
+        public List<List<ISheet>> CutExample(List<List<OrderRelatedElement>> listOfrectangles)
+        {
+           
 
-            return CutSheetIntoPieces(sheet);
+            List<List<ISheet>> cuttedSheets = new List<List<ISheet>>();
+            foreach (var rectangles in listOfrectangles)
+            {
+                Sheet sheet = Sheet.CreateNewSheet(rectangles.ToArray(), default, new Size(1000, 1500));
+
+                //PrintoutInstructionsHowToCut();
+                cuttedSheets.Add(CutSheetIntoPieces(sheet).ToList());
+            }
+            return cuttedSheets;
+
+            throw new ArgumentException($"There are no rectangles");
         }
         static List<CutLineAndSheet> cutListResult = new List<CutLineAndSheet>();
         public List<CutLineAndSheet> GetCutLineAndSheets()
@@ -85,6 +96,7 @@ namespace RectangleSpreadController
         {
             int counter = 1;
             string path = @"C:\Users\DULPRZ\Source\Repos\PrzemekDulat\SheetCutting" + RandomString(10) + ".txt";
+            bool rotatedLeft = false;
             if (!File.Exists(path))
             {
                 //Create a file to write to.
@@ -94,34 +106,45 @@ namespace RectangleSpreadController
                     {
                         if (item.Line.LineType == LineType.Horizontal)
                         {
+                            if (rotatedLeft)
+                            {
+                                sw.WriteLine(counter + ".Rotate right");
+                                rotatedLeft = false;
+                            }
                             sw.WriteLine(counter + ".Cut sheet horizontal on Value: " + item.Line.Value);
                         }
-                        else if(item.Line.LineType == LineType.Vertical)
+                        else if (item.Line.LineType == LineType.Vertical)
                         {
-                            sw.WriteLine(counter + ".Rotate left");
-                            sw.WriteLine(1+counter + ".Cut sheet horizontal on Value: " + item.Line.Value);
+                            if (!rotatedLeft)
+                            {
+                                sw.WriteLine(counter + ".Rotate left");
+                                rotatedLeft = true;
+
+                            }
+                            sw.WriteLine(1 + counter + ".Cut sheet horizontal on Value: " + item.Line.Value);
                             counter++;
                         }
                         counter++;
 
-                        foreach (var tye in item.OutputSheets)
+                        foreach (var outputSheet in item.OutputSheets)
                         {
-                            if (tye.GetType() == typeof(OrderRelatedElement))
+                            if (outputSheet.GetType() == typeof(OrderRelatedElement))
                             {
                                 sw.WriteLine("   -Element: " + item.Sheet.OrderRelatedElements[0].OrderLine);
+                                rotatedLeft = false;
                                 if (item.Sheet.OrderRelatedElements.Count() == 1)
                                 {
                                     counter = 1;
 
                                 }
                             }
-                            else if (tye.GetType() == typeof(Waste))
+                            else if (outputSheet.GetType() == typeof(Waste))
                             {
                                 sw.WriteLine("   -Waste");
                             }
 
                         }
-                        
+
                     }
                 }
             }
@@ -145,82 +168,35 @@ namespace RectangleSpreadController
               .Select(s => s[getrandom.Next(s.Length)]).ToArray());
         }
 
-        //private List<OrderRelatedElement> SetupRectanglesLocation(List<OrderRelatedElement> rectangles, int stWidth, int sHeight)
-        //{
-        //    int sheetWidth = stWidth;
-        //    int sheetHeight = sHeight;
-        //    List<OrderRelatedElement> firstsInColumns = new List<OrderRelatedElement>();
-        //    int heightOffset = 0;
-        //    int widthOffset = 0;
-        //    firstsInColumns.Add(rectangles.First());
-        //    foreach (OrderRelatedElement rectangleModel in rectangles)
-        //    {
-        //        if (rectangleModel.Size.Height <= CalculateRemainingHeight()) //fits by height
-        //        {
-        //            rectangleModel.Location = new Point(widthOffset, heightOffset);
-        //            heightOffset += rectangleModel.Size.Height;
-        //        }
-        //        else //offset to the right
-        //        {
-        //            widthOffset = 0;
-        //            foreach (var bRectangle in firstsInColumns)
-        //            {
-        //                widthOffset += bRectangle.Size.Width;
-        //            }
+        private List<OrderRelatedElement> SortRectanglesDecreasing(List<OrderRelatedElement> rectangles, bool isAbleToRotate)
+        {
+            foreach (var rectangle in rectangles)
+            {
+                if (rectangle.Size.Height > rectangle.Size.Width && isAbleToRotate)
+                {
+                    Size tmpSize = new Size();
+                    tmpSize = rectangle.Size;
+                    rectangle.Size = new Size(tmpSize.Height, tmpSize.Width);
+                }
+            }
+            List<OrderRelatedElement> sortedRectangles = rectangles.OrderByDescending(o => o.Size.Width).ToList();
 
-        //            firstsInColumns.Add(rectangleModel);
-        //            heightOffset = 0;
-        //            rectangleModel.Location = new Point(widthOffset, heightOffset);
-        //            heightOffset += rectangleModel.Size.Height;
-        //        }
-        //    }
+            return sortedRectangles;
+        }
 
-        //    return rectangles;
+        public List<OrderRelatedElement> CreateRandomListOfRectangles(int numberOfRectangles)
+        {
+            if (numberOfRectangles < 0) { throw new ArgumentException(nameof(numberOfRectangles)); }
 
-        //    int CalculateRemainingHeight()
-        //    {
-        //        return sheetHeight - heightOffset;
-        //    }
-        //}
-        //private List<OrderRelatedElement> SortRectanglesDecreasing(List<OrderRelatedElement> rectangles)
-        //{
-        //    foreach (var rectangle in rectangles)
-        //    {
-        //        if (rectangle.Size.Height > rectangle.Size.Width)
-        //        {
-        //            Size tmpSize = new Size();
-        //            tmpSize = rectangle.Size;
-        //            rectangle.Size = new Size(tmpSize.Height, tmpSize.Width);
-        //        }
-        //    }
-        //    List<OrderRelatedElement> sortedRectangles = rectangles.OrderByDescending(o => o.Size.Width).ToList();
+            List<OrderRelatedElement> rectangles = new List<OrderRelatedElement>();
 
-        //    return sortedRectangles;
-        //}
-        //public List<OrderRelatedElement> CreateRandomListOfRectangles(int numberOfRectangles)
-        //{
-        //    if (numberOfRectangles < 0) { throw new ArgumentException(nameof(numberOfRectangles)); }
-
-        //    List<OrderRelatedElement> rectangles = new List<OrderRelatedElement>();
-
-        //    for (int i = 0; i < numberOfRectangles; i++)
-        //    {
-        //        OrderRelatedElement rectangle = new OrderRelatedElement();
-        //        rectangle.Location = new Point(0, 0);
-        //        rectangle.Size = new Size(GetRandomNumber(50, 200), GetRandomNumber(50, 200));
-        //        rectangles.Add(rectangle);
-        //    }
-        //    return rectangles;
-        //}
-
-        //private static readonly Random getrandom = new Random();
-        //public static int GetRandomNumber(int min, int max)
-        //{
-        //    lock (getrandom)
-        //    {
-        //        return getrandom.Next(min, max);
-        //    }
-        //}
+            for (int i = 0; i < numberOfRectangles; i++)
+            {
+                OrderRelatedElement rectangle = new OrderRelatedElement(new Point(0, 0), new Size(200,300), "No.1234567");
+                rectangles.Add(rectangle);
+            }
+            return rectangles;
+        }
 
     }
 }
