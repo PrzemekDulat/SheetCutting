@@ -32,9 +32,7 @@ namespace RectangleSpreadController
         }
         public static Sheet CreateNewSheet(OrderRelatedElement[] orderRelatedElements, MaterialType materialType, Size size)
         {
-
             return new Sheet(orderRelatedElements, new Point(0, 0), materialType, size);
-
         }
 
 
@@ -141,7 +139,7 @@ namespace RectangleSpreadController
             //    lengths.Add(item.Lenght(sheet.OrderRelatedElements, sheet));
             //}
             //TODO
-            return validLines.Where(x => x.Lenght(sheet.OrderRelatedElements, sheet) <= 1000).ToList(); ;
+            return validLines.Where(x => x.Lenght(sheet.OrderRelatedElements, sheet) <= 20000).ToList(); ;
         }
 
        

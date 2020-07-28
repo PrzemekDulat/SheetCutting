@@ -23,9 +23,11 @@ namespace SheetCutting
         {
             //pictureBox1.Image = adapter.StartAssemblingRectangles();
             //czesc
-            viewModel.DoStuff();
+            //viewModel.DoStuff();
             viewModel.StartCuttingSheet(rotatableCheckBox.Checked);
             SetLabelTextAndPictureboxImage();
+            countOfWaste.Text = "SCORE: "+ viewModel.GetScore().ToString();
+
         }
 
         private void generateJson_Click(object sender, EventArgs e)

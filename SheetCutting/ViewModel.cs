@@ -20,22 +20,24 @@ namespace SheetCutting
         {
             var result = rectangleSorter.CutExample(rectangleSorter.SampleDataSet(rotatable));
             var howToCut = rectangleSorter.GetCutLineAndSheets();
-
+            
             DrawSheetOnScreen(howToCut);
         }
 
+
+
         List<Image> images = new List<Image>();
 
-        public void DoStuff()
-        {
-            BestFitAlgorithm bestFitAlgorithm = new BestFitAlgorithm();
-            bestFitAlgorithm.test();
-        }
+        //public void DoStuff()
+        //{
+        //    BestFitAlgorithm bestFitAlgorithm = new BestFitAlgorithm();
+        //    bestFitAlgorithm.test();
+        //}
         public List<Image> DrawSheetOnScreen(List<CutLineAndSheet> cutLinesAndSheets)
         {
             foreach (var item in cutLinesAndSheets)
             {
-                Image precutImage = new Bitmap(1000, 1500);
+                Image precutImage = new Bitmap(1000, 1600);
 
                 using (Graphics formGraphics = Graphics.FromImage(precutImage))
                 {
@@ -123,6 +125,11 @@ namespace SheetCutting
         public void GenerateTextInstruction()
         {
             rectangleSorter.PrintoutInstructionsHowToCut();
+        }
+
+        public int GetScore()
+        {
+            return rectangleSorter.CalculateScore();
         }
 
         private static readonly Random getrandom = new Random();

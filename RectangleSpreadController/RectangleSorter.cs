@@ -18,37 +18,30 @@ namespace RectangleSpreadController
 {
     public class RectangleSorter
     {
+        
         public List<List<OrderRelatedElement>> SampleDataSet(bool rotatable)
         {
-            OrderRelatedElement[] orderRelatedElements = new OrderRelatedElement[6];
-
-            //orderRelatedElements[0] = new OrderRelatedElement(new Point(0, 0), new Size(200, 300), "No.1234567-123");
-            //orderRelatedElements[1] = new OrderRelatedElement(new Point(0, 300), new Size(200, 300), "No.2234567-123");
-            //orderRelatedElements[2] = new OrderRelatedElement(new Point(600, 500), new Size(200, 300), "No.3234567-123");
-            //orderRelatedElements[3] = new OrderRelatedElement(new Point(800, 1200), new Size(200, 300), "No.4234567-123");
-            //orderRelatedElements[4] = new OrderRelatedElement(new Point(123, 1240), new Size(300, 200), "No.5234567-123");
-            //orderRelatedElements[5] = new OrderRelatedElement(new Point(0, 600), new Size(200, 300), "No.6234567-123");
-
-            return SortedRectanglesByAlgorithm(new FirstFitDecreasingAlgorithm());
+            return SortedRectanglesByAlgorithm(new BestFitAlgorithm());
         }
         public List<List<OrderRelatedElement>> SortedRectanglesByAlgorithm(IAlgorithm algorithm)
         {
-            AlgorithmConstrains algorithmConstrains = AlgorithmConstrains.Create(true, 1500);
+            AlgorithmConstrains algorithmConstrains = AlgorithmConstrains.Create(true, 1600);
 
-            Size sheetSize = new Size(1000,1500);
+            Size sheetSize = new Size(1000, 1600);
             
-            Sheet sheet = Sheet.CreateNewSheet(SortRectanglesDecreasing(CreateRandomListOfRectangles(25), algorithmConstrains.IsAbleToRotate).ToArray(), default, sheetSize);
-            
+            //Sheet sheet = Sheet.CreateNewSheet(SortRectanglesDecreasing(CreateRandomListOfRectangles(10), algorithmConstrains.IsAbleToRotate).ToArray(), default, sheetSize);
+            Sheet sheet = Sheet.CreateNewSheet(SortRectanglesDecreasing(SpecificDataSetOfRectangles(), algorithmConstrains.IsAbleToRotate).ToArray(), default, sheetSize);
+
             return algorithm.ExecuteAlgorithm(sheet, algorithmConstrains);
         }
         public List<List<ISheet>> CutExample(List<List<OrderRelatedElement>> listOfrectangles)
         {
-           
+
 
             List<List<ISheet>> cuttedSheets = new List<List<ISheet>>();
             foreach (var rectangles in listOfrectangles)
             {
-                Sheet sheet = Sheet.CreateNewSheet(rectangles.ToArray(), default, new Size(1000, 1500));
+                Sheet sheet = Sheet.CreateNewSheet(rectangles.ToArray(), default, new Size(1000, 1600));
 
                 //PrintoutInstructionsHowToCut();
                 cuttedSheets.Add(CutSheetIntoPieces(sheet).ToList());
@@ -152,6 +145,46 @@ namespace RectangleSpreadController
             Process.Start(path);
         }
 
+        public int CalculateScore()
+        {
+            Score score = new Score();
+
+            score.NumberOfSheets = SortedRectanglesByAlgorithm(new FirstFitDecreasingAlgorithm()).Count;
+            score.NumberOfCuts = cutListResult.Count;
+            score.NumberOfWaste = score.WasteRatio.Count;
+
+            foreach (var item in cutListResult)
+            {
+                foreach (var outputSheet in item.OutputSheets)
+                {
+                    if (outputSheet.GetType() == typeof(Waste))
+                    {
+                        score.WasteRatio.Add((outputSheet.Size.Width * outputSheet.Size.Height) /
+                            Math.Abs((outputSheet.Size.Width - outputSheet.Size.Height)) == 0 ? 1 : Math.Abs((outputSheet.Size.Width - outputSheet.Size.Height)));
+                    }
+
+                }
+            }
+
+
+            return CalculateFinalScore(score);
+        }
+
+        private int CalculateFinalScore(Score score)
+        {
+            int finalScore = default;
+            finalScore += score.NumberOfCuts * 50;
+            finalScore += score.NumberOfWaste * 100;
+            finalScore += score.NumberOfSheets * 1000;
+
+            foreach (var waste in score.WasteRatio)
+            {
+                finalScore += waste;
+            }
+
+            return finalScore;
+        }
+
         private static readonly Random getrandom = new Random();
         public static int GetRandomNumber(int min, int max)
         {
@@ -192,11 +225,31 @@ namespace RectangleSpreadController
 
             for (int i = 0; i < numberOfRectangles; i++)
             {
-                OrderRelatedElement rectangle = new OrderRelatedElement(new Point(0, 0), new Size(200,300), "No.1234567");
+                OrderRelatedElement rectangle = new OrderRelatedElement(new Point(0, 0), new Size(GetRandomNumber(200, 400), GetRandomNumber(200, 400)), "No.1234567");
                 rectangles.Add(rectangle);
             }
             return rectangles;
         }
 
+        public List<OrderRelatedElement> SpecificDataSetOfRectangles()
+        {
+            OrderRelatedElement[] orderRelatedElements = new OrderRelatedElement[11];
+
+            orderRelatedElements[0] = new OrderRelatedElement(new Point(0, 0), new Size(500, 500), "No.1234567-123");
+            orderRelatedElements[1] = new OrderRelatedElement(new Point(0, 0), new Size(500, 250), "No.2234567-123");
+            orderRelatedElements[2] = new OrderRelatedElement(new Point(0, 0), new Size(500, 250), "No.3234567-123");
+            orderRelatedElements[3] = new OrderRelatedElement(new Point(0, 0), new Size(500, 250), "No.4234567-123");
+            orderRelatedElements[4] = new OrderRelatedElement(new Point(0, 0), new Size(250, 350), "No.5234567-123");
+            orderRelatedElements[5] = new OrderRelatedElement(new Point(0, 0), new Size(250, 350), "No.5234567-123");
+
+            orderRelatedElements[6] = new OrderRelatedElement(new Point(0, 0), new Size(125, 300), "No.5234567-123");
+            orderRelatedElements[7] = new OrderRelatedElement(new Point(0, 0), new Size(125, 300), "No.5234567-123");
+            orderRelatedElements[8] = new OrderRelatedElement(new Point(0, 0), new Size(125, 300), "No.5234567-123");
+            orderRelatedElements[9] = new OrderRelatedElement(new Point(0, 0), new Size(125, 300), "No.5234567-123");
+
+            orderRelatedElements[10] = new OrderRelatedElement(new Point(0, 0), new Size(500, 300), "No.5234567-123");
+
+            return orderRelatedElements.ToList();
+        }
     }
 }
